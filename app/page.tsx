@@ -9,6 +9,12 @@ export default function Home() {
           placeholder="Ask me anything..."
           theme="light"
           className="h-full"
+          // Example of custom colors (uncomment to use)
+          // headerBgColor="#1a1a1a"
+          // headerTextColor="#ffffff"
+          // panelBgColor="#0f0f0f"
+          // panelTextColor="#f0f0f0"
+          // logoHeight={32}
         />
       </div>
     </main>

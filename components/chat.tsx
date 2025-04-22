@@ -4,6 +4,8 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { useChat } from "@ai-sdk/react"
 import WorkflowsPanel from "./workflows-panel"
+import Image from "next/image"
+
 
 export interface ChatProps {
   apiUrl?: string
@@ -11,6 +13,11 @@ export interface ChatProps {
   placeholder?: string
   theme?: "light" | "dark"
   className?: string
+  headerBgColor?: string
+  headerTextColor?: string
+  panelBgColor?: string
+  panelTextColor?: string
+  logoHeight?: number
 }
 
 // Function to parse message content with code blocks
@@ -71,6 +78,11 @@ export const Chat: React.FC<ChatProps> = ({
   placeholder = "Type your message...",
   theme = "light",
   className = "",
+  headerBgColor,
+  headerTextColor,
+  panelBgColor,
+  panelTextColor,
+  logoHeight = 40,
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const [highlightedMessages, setHighlightedMessages] = useState<Record<string, boolean>>({})
@@ -119,40 +131,58 @@ export const Chat: React.FC<ChatProps> = ({
   const themeClasses = {
     light: {
       container: "bg-white border border-gray-200",
-      header: "bg-gray-50 text-gray-800 border-b border-gray-200",
+      header: headerBgColor ? "" : "bg-gray-50 text-gray-800 border-b border-gray-200",
       messages: "bg-white",
       userMessage: "bg-blue-500 text-white",
       aiMessage: "bg-gray-100 text-gray-800 border border-gray-200",
       codeBlock: "bg-gray-800 text-gray-100 rounded-md overflow-x-auto",
       input: "bg-white border-gray-300 text-gray-800 focus:border-blue-500 focus:ring-blue-500",
       sendButton: "bg-blue-500 hover:bg-blue-600 text-white",
-      panel: "bg-gray-50 border-r border-gray-200",
+      panel: panelBgColor ? "" : "bg-gray-50 border-r border-gray-200",
     },
     dark: {
       container: "bg-gray-900 border border-gray-700",
-      header: "bg-gray-800 text-gray-100 border-b border-gray-700",
+      header: headerBgColor ? "" : "bg-gray-800 text-gray-100 border-b border-gray-700",
       messages: "bg-gray-900",
       userMessage: "bg-blue-600 text-white",
       aiMessage: "bg-gray-800 text-gray-100 border border-gray-700",
       codeBlock: "bg-gray-900 text-gray-100 rounded-md overflow-x-auto",
       input: "bg-gray-800 border-gray-700 text-gray-100 focus:border-blue-500 focus:ring-blue-500",
       sendButton: "bg-blue-600 hover:bg-blue-700 text-white",
-      panel: "bg-gray-800 border-r border-gray-700",
+      panel: panelBgColor ? "" : "bg-gray-800 border-r border-gray-700",
     },
   }
+
+  // Calculate logo dimensions to maintain aspect ratio
+  // The original logo has a 1:1 aspect ratio
+  const logoWidth = logoHeight
 
   return (
     <div className={`flex h-full ${className}`}>
       {/* Workflows Panel */}
-      <WorkflowsPanel isOpen={isPanelOpen} theme={theme} themeClasses={themeClasses[theme]} />
+      <WorkflowsPanel
+        isOpen={isPanelOpen}
+        theme={theme}
+        themeClasses={themeClasses[theme]}
+        customBgColor={panelBgColor}
+        customTextColor={panelTextColor}
+      />
 
       {/* Chat Interface */}
       <div className={`flex flex-col flex-grow rounded-lg overflow-hidden shadow-lg ${themeClasses[theme].container}`}>
-        <div className={`p-4 ${themeClasses[theme].header} flex justify-between items-center`}>
+        <div
+          className={`p-4 flex justify-between items-center ${headerBgColor ? "" : themeClasses[theme].header}`}
+          style={{
+            backgroundColor: headerBgColor || "",
+            color: headerTextColor || "",
+          }}
+        >
           <div className="flex items-center">
             <button
               onClick={togglePanel}
-              className="mr-3 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className={`mr-3 p-1 rounded ${
+                theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-200"
+              } transition-colors`}
               aria-label={isPanelOpen ? "Close workflows panel" : "Open workflows panel"}
             >
               <svg
@@ -171,7 +201,25 @@ export const Chat: React.FC<ChatProps> = ({
             </button>
             <h3 className="font-medium">Chat with AI Assistant</h3>
           </div>
-          <div className="text-sm font-medium text-gray-500 dark:text-gray-400">powered by swytchcode</div>
+          <a href="https://swytchcode.com" target="_blank">
+            <div className="flex items-center">
+            Powered by 
+              <div className="rounded-md overflow-hidden" style={{ height: `${logoHeight}px`, width: `${logoWidth}px` }}>
+              
+                <div
+                  className={`p-1 bg-white flex items-center justify-center h-full w-full`}
+                >
+                  <Image
+                    src="/images/logo.png"
+                    alt="Logo"
+                    width={logoWidth - 8} // Subtract padding
+                    height={logoHeight - 8} // Subtract padding
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+            </div>
+          </a>
         </div>
 
         <div
