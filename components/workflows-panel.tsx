@@ -2,13 +2,9 @@
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
+import {Workflow} from "./types"
 
-interface Workflow {
-  id: string
-  name: string
-  description: string
-  category: string
-}
+
 
 interface WorkflowsPanelProps {
   isOpen: boolean
@@ -19,62 +15,14 @@ interface WorkflowsPanelProps {
   }
   customBgColor?: string
   customTextColor?: string
+  methodsList: any
+  workflowsList: Workflow[]
 }
 
-const sampleWorkflows: Workflow[] = [
-  {
-    id: "w1",
-    name: "Data Processing",
-    description: "Extract, transform and load data from various sources",
-    category: "Data",
-  },
-  {
-    id: "w2",
-    name: "API Integration",
-    description: "Connect to external APIs and process responses",
-    category: "Integration",
-  },
-  {
-    id: "w3",
-    name: "Image Recognition",
-    description: "Analyze and classify images using AI",
-    category: "AI",
-  },
-  {
-    id: "w4",
-    name: "Document Generation",
-    description: "Create PDFs and other documents from templates",
-    category: "Automation",
-  },
-  {
-    id: "w5",
-    name: "Email Automation",
-    description: "Send personalized emails based on triggers",
-    category: "Automation",
-  },
-  {
-    id: "w6",
-    name: "Social Media Posting",
-    description: "Schedule and post content to multiple platforms",
-    category: "Marketing",
-  },
-  {
-    id: "w7",
-    name: "Form Processing",
-    description: "Collect and validate form submissions",
-    category: "Web",
-  },
-  {
-    id: "w8",
-    name: "Database Backup",
-    description: "Automatically backup databases on schedule",
-    category: "DevOps",
-  },
-]
 
 // Add this array of programming languages after the sampleWorkflows array
 const programmingLanguages = [
-  { value: "javascript", label: "JavaScript" },
+  { value: "node.js", label: "Node.js" },
   { value: "typescript", label: "TypeScript" },
   { value: "python", label: "Python" },
   { value: "java", label: "Java" },
@@ -87,14 +35,10 @@ const programmingLanguages = [
   { value: "swift", label: "Swift" },
   { value: "kotlin", label: "Kotlin" },
   { value: "scala", label: "Scala" },
-  { value: "r", label: "R" },
-  { value: "dart", label: "Dart" },
-  { value: "sql", label: "SQL" },
-  { value: "html", label: "HTML" },
-  { value: "css", label: "CSS" },
-  { value: "bash", label: "Bash" },
-  { value: "powershell", label: "PowerShell" },
+  { value: "c", label: "C" },
 ]
+
+
 
 // Update the WorkflowsPanel component to include state for the dropdown
 const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
@@ -103,6 +47,8 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
   themeClasses,
   customBgColor,
   customTextColor,
+  methodsList,
+  workflowsList,
 }) => {
   // Add these state variables
   const [searchTerm, setSearchTerm] = useState("")
@@ -116,6 +62,15 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
   const [isMethodsDropdownOpen, setIsMethodsDropdownOpen] = useState(false)
   const [selectedMethodsLanguage, setSelectedMethodsLanguage] = useState<{ value: string; label: string } | null>(null)
   const methodsDropdownRef = useRef<HTMLDivElement>(null)
+
+  // Add these pagination-related state variables after the other state variables
+  const [workflowsPage, setWorkflowsPage] = useState(1)
+  const [methodsPage, setMethodsPage] = useState(1)
+  const itemsPerPage = 5
+
+  // Add these state variables for search functionality after the existing state variables:
+  const [workflowSearchTerm, setWorkflowSearchTerm] = useState("")
+  const [methodSearchTerm, setMethodSearchTerm] = useState("")
 
   // Add this useEffect to handle clicking outside the dropdown to close it
   useEffect(() => {
@@ -145,6 +100,10 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
     }
   }, [])
 
+  const setMethodCall = (description:string) => {
+    console.log(description)
+  }
+
   // Add this to filter languages based on search term
   const filteredLanguages = programmingLanguages.filter((lang) =>
     lang.label.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -155,8 +114,29 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
     lang.label.toLowerCase().includes(methodsSearchTerm.toLowerCase()),
   )
 
-  // Group workflows by category (keep existing code)
-  const workflowsByCategory = sampleWorkflows.reduce(
+  // Add these filter functions after the existing filter functions:
+  // Filter workflows based on search term
+  const filterWorkflows = (workflows: Workflow[]) => {
+    if (!workflowSearchTerm) return workflows
+    return workflows.filter((workflow) => workflow.description.toLowerCase().includes(workflowSearchTerm.toLowerCase()))
+  }
+
+  // Filter methods based on search term
+  const filterMethods = (methods: any[]) => {
+    if (!methodSearchTerm) return methods
+    return methods.filter((method) => method.description.toLowerCase().includes(methodSearchTerm.toLowerCase()))
+  }
+
+  // Add this pagination function after the existing filter functions
+  const paginateItems = (items: any[], page: number, perPage: number) => {
+    const startIndex = (page - 1) * perPage
+    return items.slice(startIndex, startIndex + perPage)
+  }
+
+  // Modify the workflowsByCategory code to handle pagination
+  // This should replace the existing workflowsByCategory code
+  // Group workflows by category and apply filtering
+  const workflowsByCategory = workflowsList.reduce(
     (acc, workflow) => {
       if (!acc[workflow.category]) {
         acc[workflow.category] = []
@@ -167,29 +147,43 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
     {} as Record<string, Workflow[]>,
   )
 
-  // Sample methods data
-  const methodsByCategory = {
-    Core: [
-      { id: "m1", name: "generateText", description: "Generate text from a prompt" },
-      { id: "m2", name: "streamText", description: "Stream text generation from a prompt" },
-    ],
-    Chat: [
-      { id: "m3", name: "useChat", description: "React hook for chat interfaces" },
-      { id: "m4", name: "createChat", description: "Create a new chat session" },
-    ],
-    Completion: [
-      { id: "m5", name: "useCompletion", description: "React hook for text completion" },
-      { id: "m6", name: "createCompletion", description: "Create a text completion" },
-    ],
-    Tools: [
-      { id: "m7", name: "useTool", description: "React hook for tool usage" },
-      { id: "m8", name: "callTool", description: "Call a tool with parameters" },
-    ],
-    Providers: [
-      { id: "m9", name: "openai", description: "OpenAI provider integration" },
-      { id: "m10", name: "anthropic", description: "Anthropic provider integration" },
-    ],
-  }
+  // Apply filtering to each category
+  const filteredWorkflowsByCategory = Object.entries(workflowsByCategory).reduce(
+    (acc, [category, workflows]) => {
+      const filtered = filterWorkflows(workflows)
+      if (filtered.length > 0) {
+        acc[category] = filtered
+      }
+      return acc
+    },
+    {} as Record<string, Workflow[]>,
+  )
+
+  // Convert to array for pagination
+  const allWorkflowCategories = Object.entries(filteredWorkflowsByCategory)
+
+  // Do the same for methods
+  // Apply filtering to methods
+  const filteredMethodsByCategory = Object.entries(methodsList).reduce(
+    (acc, [category, methods]) => {
+      const filtered = filterMethods(methods as any[])
+      if (filtered.length > 0) {
+        acc[category] = filtered
+      }
+      return acc
+    },
+    {} as Record<string, any[]>,
+  )
+
+  // Convert to array for pagination
+  const allMethodCategories = Object.entries(filteredMethodsByCategory)
+
+
+  // Paginate the categories
+  const paginatedWorkflowCategories = paginateItems(allWorkflowCategories, workflowsPage, itemsPerPage)
+
+  // Do the same for methods
+  const paginatedMethodCategories = paginateItems(allMethodCategories, methodsPage, itemsPerPage)
 
   if (!isOpen) return null
 
@@ -336,8 +330,26 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
               </div>
             </div>
 
-            <div className="space-y-6">
-              {Object.entries(workflowsByCategory).map(([category, workflows]) => (
+            {/* Search bar for workflows */}
+            <div className="mb-4">
+              <input
+                type="text"
+                className={`w-full px-3 py-2 text-sm border rounded-md ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "bg-white border-gray-300 text-gray-700 placeholder-gray-500"
+                }`}
+                placeholder="Search workflows..."
+                value={workflowSearchTerm}
+                onChange={(e) => {
+                  setWorkflowSearchTerm(e.target.value)
+                  setWorkflowsPage(1) // Reset to first page when searching
+                }}
+              />
+            </div>
+
+            <div className="space-y-6 mb-4">
+              {paginatedWorkflowCategories.map(([category, workflows]) => (
                 <div key={category}>
                   <h3
                     className={`text-sm font-medium mb-2 ${
@@ -350,18 +362,15 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                     {category}
                   </h3>
                   <ul className="space-y-2">
-                    {workflows.map((workflow) => (
+                    {workflows.map((workflow:any) => (
                       <li key={workflow.id}>
                         <button
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
                         >
-                          <div className="font-medium">{workflow.name}</div>
                           <div
-                            className={`text-xs mt-1 ${
-                              customTextColor ? "opacity-70" : theme === "dark" ? "text-gray-400" : "text-gray-500"
-                            }`}
+                            className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
                           >
                             {workflow.description}
                           </div>
@@ -371,6 +380,37 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                   </ul>
                 </div>
               ))}
+            </div>
+
+            {/* Add pagination controls for workflows */}
+            <div className="flex justify-between items-center mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setWorkflowsPage((prev) => Math.max(prev - 1, 1))}
+                disabled={workflowsPage === 1}
+                className={`px-2 py-1 rounded text-sm ${
+                  workflowsPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                Previous
+              </button>
+              <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                Page {workflowsPage} of {Math.ceil(allWorkflowCategories.length / itemsPerPage)}
+              </span>
+              <button
+                onClick={() =>
+                  setWorkflowsPage((prev) =>
+                    prev < Math.ceil(allWorkflowCategories.length / itemsPerPage) ? prev + 1 : prev,
+                  )
+                }
+                disabled={workflowsPage >= Math.ceil(allWorkflowCategories.length / itemsPerPage)}
+                className={`px-2 py-1 rounded text-sm ${
+                  workflowsPage >= Math.ceil(allWorkflowCategories.length / itemsPerPage)
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                Next
+              </button>
             </div>
           </>
         ) : (
@@ -480,8 +520,26 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
               </div>
             </div>
 
-            <div className="space-y-6">
-              {Object.entries(methodsByCategory).map(([category, methods]) => (
+            {/* Search bar for methods */}
+            <div className="mb-4">
+              <input
+                type="text"
+                className={`w-full px-3 py-2 text-sm border rounded-md ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "bg-white border-gray-300 text-gray-700 placeholder-gray-500"
+                }`}
+                placeholder="Search methods..."
+                value={methodSearchTerm}
+                onChange={(e) => {
+                  setMethodSearchTerm(e.target.value)
+                  setMethodsPage(1) // Reset to first page when searching
+                }}
+              />
+            </div>
+
+            <div className="space-y-6 mb-4">
+              {paginatedMethodCategories.map(([category, methods]) => (
                 <div key={category}>
                   <h3
                     className={`text-sm font-medium mb-2 ${
@@ -494,18 +552,16 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                     {category}
                   </h3>
                   <ul className="space-y-2">
-                    {methods.map((method) => (
+                    {methods.map((method:any) => (
                       <li key={method.id}>
                         <button
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
+                          onClick={() => setMethodCall(method.description)}
                         >
-                          <div className="font-medium">{method.name}</div>
                           <div
-                            className={`text-xs mt-1 ${
-                              customTextColor ? "opacity-70" : theme === "dark" ? "text-gray-400" : "text-gray-500"
-                            }`}
+                            className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
                           >
                             {method.description}
                           </div>
@@ -515,6 +571,37 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                   </ul>
                 </div>
               ))}
+            </div>
+
+            {/* Add pagination controls for methods */}
+            <div className="flex justify-between items-center mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setMethodsPage((prev) => Math.max(prev - 1, 1))}
+                disabled={methodsPage === 1}
+                className={`px-2 py-1 rounded text-sm ${
+                  methodsPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                Previous
+              </button>
+              <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                Page {methodsPage} of {Math.ceil(allMethodCategories.length / itemsPerPage)}
+              </span>
+              <button
+                onClick={() =>
+                  setMethodsPage((prev) =>
+                    prev < Math.ceil(allMethodCategories.length / itemsPerPage) ? prev + 1 : prev,
+                  )
+                }
+                disabled={methodsPage >= Math.ceil(allMethodCategories.length / itemsPerPage)}
+                className={`px-2 py-1 rounded text-sm ${
+                  methodsPage >= Math.ceil(allMethodCategories.length / itemsPerPage)
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                Next
+              </button>
             </div>
           </>
         )}

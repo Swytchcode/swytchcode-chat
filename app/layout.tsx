@@ -7,7 +7,7 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Next.js AI Chat Plugin",
+  title: "Swytchcode Chat Plugin",
   description: "A demo of the React AI Chat plugin integrated with Next.js 15.3.1",
     generator: 'v0.dev'
 }
