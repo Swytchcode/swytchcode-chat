@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export async function POST(req: Request) {
+    const { service, type, version, method_workflow, language } = await req.json();
     const endpoint = `${process.env.BASE_URL}/mcp-agent-generate`;
-    const payload = { service: "value", type:"", version:"", method_workflow:"", language:"" };
+    const payload = { service, type, version, method_workflow, language };
 
-    console.log("ENDPOINT",endpoint, req)
 
     try {
         const response = await axios.post(endpoint, payload, {

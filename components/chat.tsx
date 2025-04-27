@@ -1,26 +1,17 @@
 "use client"
 
 import type React from "react"
-import { useEffect, useRef, useState } from "react"
-import { useChat } from "@ai-sdk/react"
-import WorkflowsPanel from "./workflows-panel"
-import Image from "next/image"
 
-export interface ChatProps {
-  apiUrl?: string
-  initialMessage?: string
-  placeholder?: string
-  theme?: "light" | "dark"
-  className?: string
-  headerBgColor?: string
-  headerTextColor?: string
-  panelBgColor?: string
-  panelTextColor?: string
-  logoHeight?: number
-}
+import { useState, useRef, useEffect } from "react"
+import Image from "next/image"
+import WorkflowsPanel from "./workflows-panel"
+import {Workflow} from "./types"
+import axios from "axios";
 
 // Function to parse message content with code blocks
 const formatMessageContent = (content: string) => {
+
+
   if (!content) return null
 
   // Regular expression to match code blocks with optional language specification
@@ -41,7 +32,7 @@ const formatMessageContent = (content: string) => {
     }
 
     // Add the code block with language info
-    const language = match[1] || "javascript" // Default to javascript if no language is specified
+    const language = match[1] || "js" // Default to javascript if no language is specified
     const code = match[2].trim()
     parts.push({
       type: "code",
@@ -68,11 +59,25 @@ const formatMessageContent = (content: string) => {
     })
   }
 
+
   return parts
 }
 
-export const Chat: React.FC<ChatProps> = ({
-  apiUrl = "/api/chat",
+export interface SwytchcodeChatProps {
+  apiUrl?: string
+  initialMessage?: string
+  placeholder?: string
+  theme?: "light" | "dark"
+  className?: string
+  headerBgColor?: string
+  headerTextColor?: string
+  panelBgColor?: string
+  panelTextColor?: string
+  logoHeight?: number
+}
+
+export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
+  apiUrl = "/api/workflowrequest",
   initialMessage = "Hello! How can I help you today?",
   placeholder = "Type your message...",
   theme = "light",
@@ -81,23 +86,26 @@ export const Chat: React.FC<ChatProps> = ({
   headerTextColor,
   panelBgColor,
   panelTextColor,
-  logoHeight = 28,
+  logoHeight = 40,
 }) => {
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const [highlightedMessages, setHighlightedMessages] = useState<Record<string, boolean>>({})
   const [isPanelOpen, setIsPanelOpen] = useState(true)
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: apiUrl,
-    initialMessages: initialMessage ? [{ id: "1", role: "assistant", content: initialMessage }] : [],
-  })
+  const [messages, setMessages] = useState<Array<{ id: string; role: "user" | "assistant"; content: string }>>([
+    { id: "1", role: "assistant", content: initialMessage },
+  ])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [language, setLanguage] = useState("")
+  const [methodsList, setMethodsList] = useState<{ [key: string]: any[] }>({});
+  const [workflowList, setWorkflowList] = useState<Workflow[]>([]);
+  const [highlightedMessages, setHighlightedMessages] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
     }
   }, [messages])
-
+  
   // Load syntax highlighting only on client side
   useEffect(() => {
     // Track which messages have been processed for highlighting
@@ -122,6 +130,128 @@ export const Chat: React.FC<ChatProps> = ({
       }
     }
   }, [messages, highlightedMessages])
+
+  useEffect(() =>  {
+    
+    const fetchMethodsData = async ()  => {
+      let methodsList: any[] = []
+      let i: number = 0
+      try {
+        const response = await axios.post('/api/list', {type:"methods"}, {
+          headers: {
+            "Content-Type": "application/json"
+          },
+        });
+
+        
+        response.data.data.data.forEach((item:any) => {
+          let key = `method_${i++}`
+          methodsList.push({ id: key, name: "generateText", description: item.name })
+        });
+
+      } catch (err) {
+        console.error("Error fetching:", err);
+      }
+
+      const methodsByCategory = {
+        Core: methodsList
+      }
+
+      setMethodsList(methodsByCategory)
+    };
+  
+    fetchMethodsData()
+
+  },[])
+
+  useEffect(() =>  {
+    
+    const fetchWorkflowsData = async ()  => {
+      let workflowsList: Workflow[] = []
+      let i: number = 0
+      try {
+        const response = await axios.post('/api/list', {type:"workflows"}, {
+          headers: {
+            "Content-Type": "application/json"
+          },
+        });
+
+        
+        response.data.data.data.forEach((item:any) => {
+          let key = `workflow_${i++}`
+          workflowsList.push({ id: key, name: "", description: item.name, category: "Most used workflows" })
+        });
+
+      } catch (err) {
+        console.error("Error fetching:", err);
+      }
+
+
+      setWorkflowList(workflowsList)
+    };
+  
+    fetchWorkflowsData()
+
+  },[])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    handleNewPrompt(input)
+    setInput("")
+  }
+
+  const handleNewPrompt = async (customMessage: string) => {
+    const messageToSend = customMessage;
+    
+    if (!messageToSend.trim() || isLoading) return;
+
+    // Add user message
+    const userMessage = { id: Date.now().toString(), role: "user" as const, content: messageToSend }
+    setMessages((prev) => [...prev, userMessage]);
+  
+ 
+    setIsLoading(true)
+
+    try {
+      // Call the API
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage],
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`)
+      }
+
+      // Get the response text
+      const data = await response.json()
+
+      // Add assistant message
+      setMessages((prev) => [
+        ...prev,
+        { id: (Date.now() + 1).toString(), role: "assistant", content: data.text || "Thank you" },
+      ])
+    } catch (error) {
+      console.error("Error sending message:", error)
+      // Add error message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: "Sorry, there was an error processing your request.",
+        },
+      ])
+    } finally {
+      setIsLoading(false)
+    }
+
+  }
 
   const togglePanel = () => {
     setIsPanelOpen(!isPanelOpen)
@@ -165,6 +295,15 @@ export const Chat: React.FC<ChatProps> = ({
         themeClasses={themeClasses[theme]}
         customBgColor={panelBgColor}
         customTextColor={panelTextColor}
+        methodsList={methodsList}
+        workflowsList={workflowList}
+        onItemSelect={(description) => {
+          handleNewPrompt(description);
+        }}
+        onLanguageSelect={(newLanguage) => {
+          console.log(newLanguage)
+          setLanguage(newLanguage)
+        }}
       />
 
       {/* Chat Interface */}
@@ -200,10 +339,12 @@ export const Chat: React.FC<ChatProps> = ({
             </button>
             <h3 className="font-medium">Chat with AI Assistant</h3>
           </div>
+          <a href="https://swytchcode.com" target="_blank">
           <div className="flex items-center">
+            Powered by
             <div className="rounded-md overflow-hidden" style={{ height: `${logoHeight}px`, width: `${logoWidth}px` }}>
               <div
-                className={`p-1 ${theme === "dark" ? "bg-white" : "bg-gray-800"} flex items-center justify-center h-full w-full`}
+                className={`p-1 flex items-center justify-center h-full w-full`}
               >
                 <Image
                   src="/images/logo.png"
@@ -215,6 +356,7 @@ export const Chat: React.FC<ChatProps> = ({
               </div>
             </div>
           </div>
+          </a>
         </div>
 
         <div
@@ -222,8 +364,8 @@ export const Chat: React.FC<ChatProps> = ({
           className={`flex-1 overflow-y-auto p-4 space-y-4 min-h-[400px] max-h-[600px] ${themeClasses[theme].messages}`}
         >
           {messages.map((message) => {
-            const formattedContent = formatMessageContent(message.content)
-
+            const formattedContent = formatMessageContent(message.content);
+            
             return (
               <div key={message.id} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
@@ -232,7 +374,7 @@ export const Chat: React.FC<ChatProps> = ({
                   }`}
                 >
                   {formattedContent &&
-                    formattedContent.map((part, index) => {
+                    formattedContent.map((part: any, index: number) => {
                       if (part.type === "text") {
                         return (
                           <div key={index} className="whitespace-pre-wrap mb-2">
@@ -281,7 +423,7 @@ export const Chat: React.FC<ChatProps> = ({
             <input
               type="text"
               value={input}
-              onChange={handleInputChange}
+              onChange={(e) => setInput(e.target.value)}
               placeholder={placeholder}
               className={`flex-1 px-4 py-2 rounded-md border focus:outline-none focus:ring-2 ${themeClasses[theme].input}`}
             />

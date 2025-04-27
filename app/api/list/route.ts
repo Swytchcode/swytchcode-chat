@@ -17,7 +17,6 @@ export async function POST(req: Request) {
           },
         });
     
-        console.log(response.data)
         return NextResponse.json({ success: true, data: response.data });
       } catch (error) {
         console.error("Error in POST request:", error);

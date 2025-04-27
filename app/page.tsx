@@ -1,4 +1,4 @@
-import { SwytchcodeChat } from "@/components/chat-simple"
+import { SwytchcodeChat } from "@/components/chat"
 
 export default function Home() {
   return (

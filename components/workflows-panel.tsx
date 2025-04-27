@@ -17,6 +17,9 @@ interface WorkflowsPanelProps {
   customTextColor?: string
   methodsList: any
   workflowsList: Workflow[]
+  onItemSelect: (description: string) => void
+  onLanguageSelect: (newLanguage: string) => void
+
 }
 
 
@@ -49,6 +52,8 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
   customTextColor,
   methodsList,
   workflowsList,
+  onItemSelect,
+  onLanguageSelect
 }) => {
   // Add these state variables
   const [searchTerm, setSearchTerm] = useState("")
@@ -100,9 +105,15 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
     }
   }, [])
 
-  const setMethodCall = (description:string) => {
-    console.log(description)
+
+  const setMethodWorkflowCall = (description: string) => {
+    onItemSelect(description) // Call the prop function to update messages
   }
+
+  const setLanguage = (language: string) => {
+    onLanguageSelect(language)
+  }
+  
 
   // Add this to filter languages based on search term
   const filteredLanguages = programmingLanguages.filter((lang) =>
@@ -311,6 +322,7 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                               setSelectedLanguage(language)
                               setIsDropdownOpen(false)
                               setSearchTerm("")
+                              setLanguage(language.value)
                             }}
                             role="option"
                             aria-selected={selectedLanguage?.value === language.value}
@@ -368,6 +380,7 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
+                          onClick={() => setMethodWorkflowCall(workflow.description)}
                         >
                           <div
                             className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
@@ -501,6 +514,7 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                               setSelectedMethodsLanguage(language)
                               setIsMethodsDropdownOpen(false)
                               setMethodsSearchTerm("")
+                              onLanguageSelect(language.value)
                             }}
                             role="option"
                             aria-selected={selectedMethodsLanguage?.value === language.value}
@@ -558,7 +572,7 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
-                          onClick={() => setMethodCall(method.description)}
+                          onClick={() => setMethodWorkflowCall(method.description)}
                         >
                           <div
                             className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}

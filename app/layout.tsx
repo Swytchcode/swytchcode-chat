@@ -8,8 +8,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Swytchcode Chat Plugin",
-  description: "A demo of the React AI Chat plugin integrated with Next.js 15.3.1",
-    generator: 'v0.dev'
+  description: "Chat plugin to generate code for workflows and methods in multiple languages"
 }
 
 export default function RootLayout({

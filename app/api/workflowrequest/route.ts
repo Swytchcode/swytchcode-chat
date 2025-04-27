@@ -2,7 +2,6 @@ import axios from "axios";
 
 export async function POST(req: Request) {
   try {
-    // Parse the incoming request to get the messages
     const { messages } = await req.json();
 
     // Define the endpoint and payload for your API call
