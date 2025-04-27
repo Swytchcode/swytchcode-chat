@@ -1,0 +1,42 @@
+name: Bump Release Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get latest release version
+        id: get_latest_release
+        run: |
+          latest_release=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
+          echo "Latest release: $latest_release"
+          echo "latest_release=${latest_release}" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Calculate next version
+        id: calc_version
+        run: |
+          current="${{ steps.get_latest_release.outputs.latest_release }}"
+          version="${current#v}"
+          IFS='.' read -r major minor patch <<< "$version"
+          new_patch=$((patch + 1))
+          new_version="v${major}.${minor}.${new_patch}"
+          echo "Next version: $new_version"
+          echo "new_version=${new_version}" >> $GITHUB_OUTPUT
+
+      - name: Create new release
+        run: |
+          gh release create ${{ steps.calc_version.outputs.new_version }} --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
