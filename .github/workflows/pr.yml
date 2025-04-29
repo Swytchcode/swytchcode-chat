@@ -35,6 +35,21 @@ jobs:
           echo "Next version: $new_version"
           echo "new_version=${new_version}" >> $GITHUB_OUTPUT
 
+      - name: Update package.json version
+        run: |
+          # Remove 'v' prefix from version for package.json
+          package_version="${new_version#v}"
+          # Update package.json version
+          jq --arg version "$package_version" '.version = $version' package.json > temp.json && mv temp.json package.json
+          # Commit the changes
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add package.json
+          git commit -m "chore: bump version to $package_version"
+          git push
+        env:
+          new_version: ${{ steps.calc_version.outputs.new_version }}
+
       - name: Create new release
         run: |
           gh release create ${{ steps.calc_version.outputs.new_version }} --generate-notes
