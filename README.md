@@ -35,6 +35,5 @@ Create a `.env.local` file in the root directory with the following variables:
 
 ```
 OPENAI_API_KEY=your_openai_api_key
-BASE_URL=
-MCP_API_KEY=
+SWYTCHCODE_API_KEY=
 ```

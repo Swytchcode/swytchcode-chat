@@ -1,19 +1,21 @@
 import axios from "axios";
 import { NextResponse } from 'next/server';
+import { SWYTCHCODE_BASE_URL } from "../contants";
+
 
 
 export async function POST(req: Request) {
     const body = await req.json();
 
-    const endpoint = `${process.env.BASE_URL}/mcp-agent-list`;
-    const payload = { param: body.type, service:"lyrid", version:"v0.0.1", regex_input:"" };
+    const endpoint = `${SWYTCHCODE_BASE_URL}/chat-list`;
+    const payload = { param: body.type };
 
 
     try {
         const response = await axios.post(endpoint, payload, {
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": process.env.MCP_API_KEY
+            "x-api-key": process.env.SWYTCHCODE_API_KEY
           },
         });
     

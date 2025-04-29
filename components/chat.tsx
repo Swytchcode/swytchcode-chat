@@ -64,7 +64,6 @@ const formatMessageContent = (content: string) => {
 }
 
 export interface SwytchcodeChatProps {
-  apiUrl?: string
   initialMessage?: string
   placeholder?: string
   theme?: "light" | "dark"
@@ -77,7 +76,6 @@ export interface SwytchcodeChatProps {
 }
 
 export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
-  apiUrl = "/api/workflowrequest",
   initialMessage = "Hello! How can I help you today?",
   placeholder = "Type your message...",
   theme = "light",
@@ -95,7 +93,9 @@ export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [language, setLanguage] = useState("")
+  const [language, setLanguage] = useState("python")
+  const [userdefined, setUserdefined] = useState(false)
+  const [isMethod, setIsMethod] = useState(false)
   const [methodsList, setMethodsList] = useState<{ [key: string]: any[] }>({});
   const [workflowList, setWorkflowList] = useState<Workflow[]>([]);
   const [highlightedMessages, setHighlightedMessages] = useState<Record<string, boolean>>({});
@@ -214,14 +214,31 @@ export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
 
     try {
       // Call the API
+
+      let body = ""
+      let apiUrl = ""
+
+      if (!userdefined) {
+        apiUrl = "/api/fetchcode"
+        body = JSON.stringify({
+          type: isMethod ? "code": "workflow", 
+          prompt: messageToSend, 
+          language: language
+        })
+      } else {
+        apiUrl = "/api/workflowrequest"
+        body = JSON.stringify({
+          messages: [...messages, userMessage],
+        })
+      }
+
+
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-        }),
+        body,
       })
 
       if (!response.ok) {
@@ -297,12 +314,17 @@ export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
         customTextColor={panelTextColor}
         methodsList={methodsList}
         workflowsList={workflowList}
+        onLanguageSelect={(newLanguage) => {
+          setLanguage(newLanguage)
+        }}
+        onUserdefined= {(userdefined) => {
+          setUserdefined(userdefined)
+        }}
+        onMethod= {(isMethod) => {
+          setIsMethod(isMethod)
+        }}
         onItemSelect={(description) => {
           handleNewPrompt(description);
-        }}
-        onLanguageSelect={(newLanguage) => {
-          console.log(newLanguage)
-          setLanguage(newLanguage)
         }}
       />
 
@@ -423,7 +445,10 @@ export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value)
+                setUserdefined(true)
+              }}
               placeholder={placeholder}
               className={`flex-1 px-4 py-2 rounded-md border focus:outline-none focus:ring-2 ${themeClasses[theme].input}`}
             />
