@@ -1,5 +1,53 @@
 # Swytchcode Chat Plugin
 
+A React component for chat functionality.
+
+## Installation
+
+```bash
+# Using yarn
+yarn add swytchcode-chat-plugin
+
+# Using npm
+npm install swytchcode-chat-plugin
+```
+
+## Usage
+
+```tsx
+import { SwytchcodeChat } from 'swytchcode-chat-plugin';
+
+export default function MyComponent() {
+  return (
+    <SwytchcodeChat
+      initialMessage="Hello! How can I help you today?"
+      placeholder="Type your message..."
+      theme="light"
+    />
+  );
+}
+```
+
+## Development
+
+To link this package for local development:
+
+1. In this project:
+```bash
+yarn link
+```
+
+2. In your project:
+```bash
+yarn link swytchcode-chat-plugin
+```
+
+## Requirements
+
+This package requires the following peer dependencies:
+- React 16.8.0 or higher
+- React DOM 16.8.0 or higher
+- Next.js 13.0.0 or higher
 
 ## Getting Started
 
