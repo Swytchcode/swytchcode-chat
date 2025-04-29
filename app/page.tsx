@@ -8,13 +8,12 @@ export default function Home() {
           initialMessage="Hello! I'm your AI assistant. How can I help you today? Ask me to show you some code examples!"
           placeholder="Ask me anything..."
           theme="light"
-          className="h-full"
-          // Example of custom colors (uncomment to use)
-          // headerBgColor="#1a1a1a"
-          // headerTextColor="#ffffff"
-          // panelBgColor="#0f0f0f"
-          // panelTextColor="#f0f0f0"
-          // logoHeight={32}
+          className="w-full h-full"
+          headerBgColor="#ffffff"
+          headerTextColor="#000000"
+          panelBgColor="#f5f5f5"
+          panelTextColor="#000000"
+          logoHeight={40}
         />
       </div>
     </main>
