@@ -19,6 +19,8 @@ interface WorkflowsPanelProps {
   workflowsList: Workflow[]
   onItemSelect: (description: string) => void
   onLanguageSelect: (newLanguage: string) => void
+  onUserdefined: (userdefined: boolean) => void
+  onMethod: (isMethod: boolean) => void
 
 }
 
@@ -53,7 +55,9 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
   methodsList,
   workflowsList,
   onItemSelect,
-  onLanguageSelect
+  onLanguageSelect,
+  onUserdefined,
+  onMethod
 }) => {
   // Add these state variables
   const [searchTerm, setSearchTerm] = useState("")
@@ -113,7 +117,14 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
   const setLanguage = (language: string) => {
     onLanguageSelect(language)
   }
+
+  const setUserdefined = (userdefined: boolean) => {
+    onUserdefined(userdefined)
+  }
   
+  const setIsMethod = (isMethod: boolean) => {
+    onMethod(isMethod)
+  }
 
   // Add this to filter languages based on search term
   const filteredLanguages = programmingLanguages.filter((lang) =>
@@ -216,7 +227,9 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                 ? `border-b-2 border-blue-500 ${customTextColor ? "" : theme === "dark" ? "text-white" : "text-gray-800"}`
                 : `${customTextColor ? "" : theme === "dark" ? "text-gray-400" : "text-gray-600"} hover:text-gray-800`
             }`}
-            onClick={() => setActiveTab("workflows")}
+            onClick={() => {
+              setActiveTab("workflows")
+            }}
             style={{ color: activeTab === "workflows" && customTextColor ? customTextColor : "" }}
           >
             Workflows
@@ -227,7 +240,9 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                 ? `border-b-2 border-blue-500 ${customTextColor ? "" : theme === "dark" ? "text-white" : "text-gray-800"}`
                 : `${customTextColor ? "" : theme === "dark" ? "text-gray-400" : "text-gray-600"} hover:text-gray-800`
             }`}
-            onClick={() => setActiveTab("methods")}
+            onClick={() => {
+              setActiveTab("methods")
+            }}
             style={{ color: activeTab === "methods" && customTextColor ? customTextColor : "" }}
           >
             Methods
@@ -380,7 +395,10 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
-                          onClick={() => setMethodWorkflowCall(workflow.description)}
+                          onClick={() => {
+                            setMethodWorkflowCall(workflow.description)
+                            setIsMethod(false)
+                          }}
                         >
                           <div
                             className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}
@@ -572,7 +590,10 @@ const WorkflowsPanel: React.FC<WorkflowsPanelProps> = ({
                           className={`w-full text-left p-2 rounded-md text-sm transition-colors ${
                             theme === "dark" ? "text-gray-200 hover:bg-gray-700" : "text-gray-700 hover:bg-gray-200"
                           }`}
-                          onClick={() => setMethodWorkflowCall(method.description)}
+                          onClick={() => {
+                            setMethodWorkflowCall(method.description)
+                            setIsMethod(true)
+                          }}
                         >
                           <div
                             className={`${customTextColor ? "" : theme === "dark" ? "text-gray-200" : "text-gray-700"}`}

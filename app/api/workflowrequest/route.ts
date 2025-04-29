@@ -1,28 +1,29 @@
 import axios from "axios";
+import { SWYTCHCODE_BASE_URL } from "../contants";
 
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
 
     // Define the endpoint and payload for your API call
-    const endpoint = `${process.env.BASE_URL}/mcp-agent-workflow-request`;
+    const endpoint = `${SWYTCHCODE_BASE_URL}/chat-workflow-request`;
     const payload = {
-      workflow: `${messages[messages.length - 1].text} for "lyrid". Ignore the 'Logical' library.`,
+      workflow: `${messages[messages.length - 1].content}`,
       code_context: "",
     };
+
 
     // Make the POST request to the endpoint
     const response = await axios.post(endpoint, payload, {
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.MCP_API_KEY,
+        "x-api-key": process.env.SWYTCHCODE_API_KEY,
       },
     });
 
     // Assuming the response contains base64 encoded text data
     let finalResponse = atob(response.data.data);
 
-    console.log("Decoded Response:", finalResponse);
 
     // If you want to stream this response, you can use `streamText` here
     // Assuming that `streamText` takes a string or stream as an argument and returns a response
