@@ -22,6 +22,9 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Get latest release version
         id: get_latest_release
         run: |
@@ -34,15 +37,28 @@ jobs:
       - name: Calculate next version
         id: calc_version
         run: |
-          version=${{ steps.get_latest_release.outputs.latest_release }}
-          # Remove 'v' prefix if present
-          version=${version#v}
+          current="${{ steps.get_latest_release.outputs.latest_release }}"
+          version="${current#v}"
           IFS='.' read -r major minor patch <<< "$version"
+
+          # Increment patch version
           new_patch=$((patch + 1))
+
+          # Check if patch reaches 10
+          if [ $new_patch -eq 10 ]; then
+            new_patch=0
+            minor=$((minor + 1))
+          fi
+
+          # Check if minor reaches 10
+          if [ $minor -gt 10 ]; then
+            minor=0
+            major=$((major + 1))
+          fi
+
           new_version="v${major}.${minor}.${new_patch}"
           echo "Next version: $new_version"
           echo "new_version=${new_version}" >> $GITHUB_OUTPUT
-          echo "package_version=${major}.${minor}.${new_patch}" >> $GITHUB_OUTPUT
 
       - name: Update package.json version
         run: |
