@@ -1,6 +1,6 @@
 # Swytchcode Chat Plugin
 
-A React component for chat functionality.
+A Next.js library for chat functionality.
 
 ## Installation
 
@@ -28,19 +28,6 @@ export default function MyComponent() {
 }
 ```
 
-## Development
-
-To link this package for local development:
-
-1. In this project:
-```bash
-yarn link
-```
-
-2. In your project:
-```bash
-yarn link swytchcode
-```
 
 ## Requirements
 
@@ -84,4 +71,19 @@ Create a `.env.local` file in the root directory with the following variables:
 ```
 OPENAI_API_KEY=your_openai_api_key
 SWYTCHCODE_API_KEY=
+```
+
+
+## Development
+
+To link this package for local development:
+
+1. In this project:
+```bash
+yarn link
+```
+
+2. In your project:
+```bash
+yarn link swytchcode
 ```
