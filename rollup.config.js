@@ -6,6 +6,8 @@ import babel from '@rollup/plugin-babel';
 import strip from '@rollup/plugin-strip';
 import { terser } from 'rollup-plugin-terser';
 import json from '@rollup/plugin-json';
+import postcss from 'rollup-plugin-postcss';
+import url from '@rollup/plugin-url';
 
 export default {
   input: 'app/index.ts',
@@ -19,12 +21,33 @@ export default {
   plugins: [
     peerDepsExternal(),
     json(),
+    postcss({
+      extract: true,
+      modules: true,
+      use: ['sass'],
+      minimize: true,
+      fileName: 'index.css',
+      include: ['**/*.css', '**/*.scss', '**/*.sass'],
+      exclude: ['node_modules/**'],
+      config: {
+        path: './postcss.config.cjs'
+      }
+    }),
+    url({
+      include: ['**/*.svg', '**/*.png', '**/*.jpg', '**/*.gif'],
+      limit: 0,
+      fileName: '[dirname][name][extname]',
+      publicPath: '/images/'
+    }),
     resolve({
       browser: true,
       preferBuiltins: false,
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css', '.scss', '.sass']
+    }),
+    commonjs({
+      include: /node_modules/,
       extensions: ['.js', '.jsx', '.ts', '.tsx']
     }),
-    commonjs(),
     typescript({
       tsconfig: './tsconfig.json',
       outputToFilesystem: true,
@@ -39,6 +62,9 @@ export default {
         '@babel/preset-env',
         '@babel/preset-react',
         '@babel/preset-typescript'
+      ],
+      plugins: [
+        ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }]
       ]
     }),
     strip({
@@ -53,8 +79,8 @@ export default {
     'react-dom',
     'next',
     'next/router',
-    'next/link',
     'next/image',
+    'next/link',
     'next/head',
     'next/document',
     'next/app',

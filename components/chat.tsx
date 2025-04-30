@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
 import WorkflowsPanel from "./workflows-panel"
 import {Workflow} from "./types"
 import axios from "axios";
@@ -368,7 +367,7 @@ export const SwytchcodeChat: React.FC<SwytchcodeChatProps> = ({
               <div
                 className={`p-1 flex items-center justify-center h-full w-full`}
               >
-                <Image
+                <img
                   src="/images/logo.png"
                   alt="Logo"
                   width={logoWidth - 8} // Subtract padding

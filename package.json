@@ -1,25 +1,57 @@
 {
   "name": "swytchcode-chat",
-  "version": "0.1.5",
+  "version": "0.2.9",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
-  "types": "dist/types/index.d.ts",
-  "style": "dist/styles/globals.css",
+  "types": "dist/index.d.ts",
+  "style": "dist/index.css",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "lib/tailwind-preset.js",
+    "styles/base.css"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./dist/index.css": "./dist/index.css",
+
+    "./tailwind": {
+      "require": "./lib/tailwind-preset.js",
+      "import": "./lib/tailwind-preset.js"
+    },
+    "./styles": "./styles/base.css"
+  },
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf dist && mkdir -p dist/styles && cp app/styles/globals.css dist/styles/ && rollup -c && echo '\"use client\";' | cat - dist/components/chat.js > temp && mv temp dist/components/chat.js && echo '\"use client\";' | cat - dist/components/workflows-panel.js > temp && mv temp dist/components/workflows-panel.js && next build",
+    "clean": "rm -rf dist",
+    "build:rollup": "rollup -c",
+    "build:next": "next build",
+    "build": "yarn clean && mkdir -p dist/images && (cp -r public/images/* dist/images/ 2>/dev/null || true) && yarn build:rollup && yarn build:next",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "prepublishOnly": "yarn build"
   },
   "peerDependencies": {
     "next": "^13.0.0 || ^14.0.0 || ^15.0.0",
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
-    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+    "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0",
+    "tailwindcss": "^3.0.0",
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": false
+    }
   },
   "dependencies": {
     "@ai-sdk/react": "latest",
@@ -51,17 +83,16 @@
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
-    "autoprefixer": "^10.4.20",
     "axios": "0.21.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
-    "date-fns": "4.1.0",
+    "date-fns": "^3.6.0",
     "embla-carousel-react": "8.5.1",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
     "next-themes": "^0.4.4",
-    "react-day-picker": "8.10.1",
+    "react-day-picker": "^8.10.1",
     "react-hook-form": "^7.54.1",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
@@ -82,6 +113,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-strip": "^3.0.4",
     "@rollup/plugin-typescript": "^12.1.2",
+    "@rollup/plugin-url": "^8.0.2",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -91,7 +123,9 @@
     "react-dom": "^19",
     "rollup": "^4.40.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
+    "sass": "^1.87.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
