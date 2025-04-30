@@ -6,16 +6,16 @@ A React component for chat functionality.
 
 ```bash
 # Using yarn
-yarn add swytchcode-chat
+yarn add swytchcode
 
 # Using npm
-npm install swytchcode-chat
+npm install swytchcode
 ```
 
 ## Usage
 
 ```tsx
-import { SwytchcodeChat } from 'swytchcode-chat';
+import { SwytchcodeChat } from 'swytchcode';
 
 export default function MyComponent() {
   return (
@@ -39,7 +39,7 @@ yarn link
 
 2. In your project:
 ```bash
-yarn link swytchcode-chat
+yarn link swytchcode
 ```
 
 ## Requirements
