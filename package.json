@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf dist && mkdir -p dist/styles && cp app/styles/globals.css dist/styles/ && rollup -c && echo '\"use client\";' | cat - dist/components/chat.js > temp && mv temp dist/components/chat.js && echo '\"use client\";' | cat - dist/components/workflows-panel.js > temp && mv temp dist/components/workflows-panel.js && next build",
+    "build": "rm -rf dist && mkdir -p dist/styles  && rollup -c && echo '\"use client\";' | cat - dist/components/chat.js > temp && mv temp dist/components/chat.js && echo '\"use client\";' | cat - dist/components/workflows-panel.js > temp && mv temp dist/components/workflows-panel.js && next build",
     "start": "next start",
     "lint": "next lint",
     "prepare": "yarn build"
