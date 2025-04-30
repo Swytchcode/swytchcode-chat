@@ -41,14 +41,14 @@ jobs:
           # Increment patch version
           new_patch=$((patch + 1))
 
-          # Check if patch reaches 10
-          if [ $new_patch -eq 10 ]; then
+          # Check if patch is greater than or equal to 10
+          if [ $new_patch -ge 10 ]; then
             new_patch=0
             minor=$((minor + 1))
           fi
 
-          # Check if minor reaches 10
-          if [ $minor -eq 10 ]; then
+          # Check if minor is greater than or equal to 10
+          if [ $minor -ge 10 ]; then
             minor=0
             major=$((major + 1))
           fi
@@ -85,7 +85,16 @@ jobs:
       - name: Build package
         run: npm run build
 
+      - name: Debug package.json
+        run: |
+          echo "Current package.json contents:"
+          cat package.json
+          echo "NPM_TOKEN exists: ${{ secrets.NPM_TOKEN != '' }}"
+
       - name: Publish to npm
-        run: npm publish --access public
+        run: |
+          echo "Attempting to publish to npm..."
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
