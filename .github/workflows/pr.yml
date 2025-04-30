@@ -22,9 +22,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Get latest release version
         id: get_latest_release
         run: |
@@ -57,8 +54,11 @@ jobs:
           fi
 
           new_version="v${major}.${minor}.${new_patch}"
+          package_version="${major}.${minor}.${new_patch}"
           echo "Next version: $new_version"
+          echo "Package version: $package_version"
           echo "new_version=${new_version}" >> $GITHUB_OUTPUT
+          echo "package_version=${package_version}" >> $GITHUB_OUTPUT
 
       - name: Update package.json version
         run: |
