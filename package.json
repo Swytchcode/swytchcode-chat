@@ -1,6 +1,6 @@
 {
   "name": "swytchcode",
-  "version": "",
+  "version": "0.1.14",
   "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.js",
