@@ -51,7 +51,7 @@ jobs:
           fi
 
           # Check if minor reaches 10
-          if [ $minor -gt 10 ]; then
+          if [ $minor -eq 10 ]; then
             minor=0
             major=$((major + 1))
           fi
