@@ -1,5 +1,5 @@
 {
-  "name": "swytchcode-chat",
+  "name": "swytchcode",
   "version": "0.1.6",
   "type": "module",
   "main": "dist/index.js",
