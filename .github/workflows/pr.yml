@@ -60,16 +60,18 @@ jobs:
           echo "new_version=${new_version}" >> $GITHUB_OUTPUT
           echo "package_version=${package_version}" >> $GITHUB_OUTPUT
 
-      - name: Update package.json version
+      - name: Update package.json version and create a pull request
         run: |
           package_version=${{ steps.calc_version.outputs.package_version }}
           echo "Updating package.json to version: $package_version"
           jq --arg version "$package_version" '.version = $version' package.json > temp.json && mv temp.json package.json
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b bump-version-$package_version
           git add package.json
           git commit -m "chore: bump version to $package_version"
-          git push
+          git push origin bump-version-$package_version
+          gh pr create --title "chore: bump version to $package_version" --body "Automated version bump to $package_version" --base main --head bump-version-$package_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
