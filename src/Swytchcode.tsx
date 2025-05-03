@@ -43,6 +43,10 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   const workflows = workflowsList.map(w => w.name);
   const methods = methodsList.map(m => m.name);
 
+  // Check for missing API key
+  const apiKey = import.meta.env.VITE_SWYTCHCODE_API_KEY;
+  const isApiKeyMissing = !apiKey || apiKey.trim() === '';
+
   const scrollToBottom = () => {
     const container = messagesContainerRef.current;
     if (container) {
@@ -255,7 +259,8 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       <GlobalStyles />
       <AppBg>
         <AppContainer css={{ borderColor: borderColor }}>
-          {showLeftPanel && (
+          {/* Hide left panel if API key is missing */}
+          {!isApiKeyMissing && showLeftPanel && (
             <WorkflowsPanel>
               <div style={{ opacity: showLeftPanel ? 1 : 0, transition: 'opacity 0.3s' }}>
                 <PanelContent>
@@ -372,26 +377,52 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                     gap: '0.5rem',
                   }}
                 >
-                  Powered by <img src="/logo_icon.png" alt="swytchcode Logo" style={{ height: 22 }} />
+                  Powered by <svg width="22" height="22" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M316.68,117.53l.02.04c-17.67-7.78-37.19-12.14-57.74-12.14-79.2,0-143.41,64.21-143.41,143.41,0,43.11,19.05,81.75,49.16,108.04l-13.69,17.58c-35.33-30.38-57.73-75.37-57.73-125.62,0-91.49,74.17-165.66,165.66-165.66,38,0,72.99,12.83,100.95,34.35h-43.23Z" fill="#f4941f"/>
+                    <path d="M359.76,350.79c-25.9,25.61-61.49,41.45-100.79,41.45-13.77,0-27.07-1.98-39.68-5.6l-21.62,16.09c18.97,7.56,39.63,11.76,61.3,11.76,45.45,0,86.61-18.32,116.54-47.95l-15.75-15.75Z" fill="#f4941f"/>
+                    <polygon points="375.31 147.06 286.59 147.06 155.64 300.53 220.24 300.53 270.21 257.09 142.61 416.82 358.39 243 293.21 243 375.31 147.06" fill="#f4941f"/>
+                  </svg>
                 </a>
               </div>
             </ChatHeader>
             <MessagesContainer ref={messagesContainerRef}>
-              {messages.map(msg => (
-                <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-                  {renderMessage(msg)}
+              {/* Show error message if API key is missing */}
+              {isApiKeyMissing ? (
+                <div style={{
+                  background: '#fee2e2',
+                  color: '#b91c1c',
+                  border: '1px solid #fca5a5',
+                  borderRadius: 8,
+                  padding: '1.5rem',
+                  margin: '2rem auto',
+                  textAlign: 'center',
+                  fontWeight: 600,
+                  fontSize: '1.1rem',
+                  maxWidth: 500,
+                }}>
+                  VITE_SWYTCHCODE_API_KEY is missing. If you are the owner of this project, please generate a new key from <a href="https://app.swytchcode.com" target="_blank" rel="noopener noreferrer">https://app.swytchcode.com</a>. Read more about it in the <a href="https://docs.swytchcode.com/docs/getting-started/installation" target="_blank" rel="noopener noreferrer">documentation</a>.
                 </div>
-              ))}
-              {isLoading && <Throbber>Thinking...</Throbber>}
-              <div ref={messagesEndRef} />
+              ) : (
+                <>
+                  {messages.map(msg => (
+                    <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+                      {renderMessage(msg)}
+                    </div>
+                  ))}
+                  {isLoading && <Throbber>Thinking...</Throbber>}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
             </MessagesContainer>
+            {/* Disable input if API key is missing */}
             <InputForm onSubmit={handleSubmit}>
               <MessageInput
                 placeholder={promptValue || "Ask me anything..."}
                 value={input}
                 onChange={e => setInput(e.target.value)}
+                disabled={isApiKeyMissing}
               />
-              <SendBtn type="submit" style={{ backgroundColor: sendButtonColor }}>Send</SendBtn>
+              <SendBtn type="submit" style={{ backgroundColor: sendButtonColor }} disabled={isApiKeyMissing}>Send</SendBtn>
             </InputForm>
           </MainContent>
         </AppContainer>
