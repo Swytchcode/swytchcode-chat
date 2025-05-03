@@ -9,7 +9,7 @@ on:
 jobs:
   version-bump:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'chore: bump version')
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'chore bump version')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
       - name: Extract version from commit message
         id: extract_version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore: bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
           if [ -z "$VERSION" ]; then
             echo "Error: Could not extract version from commit message"
             exit 1
@@ -71,7 +71,7 @@ jobs:
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           gh pr create \
-            --title "chore: bump version to ${{ steps.extract_version.outputs.version }}" \
+            --title "chore bump version to ${{ steps.extract_version.outputs.version }}" \
             --body "Automated version bump to ${{ steps.extract_version.outputs.version }}" \
             --base main \
             --head $BRANCH_NAME
