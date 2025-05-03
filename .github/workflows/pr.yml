@@ -80,10 +80,13 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: npm install --force
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install --no-package-lock
 
       - name: Build package
-        run: npm run build
+        run: |
+          ROLLUP_NATIVE=false npm run build
 
       - name: Debug package.json
         run: |
