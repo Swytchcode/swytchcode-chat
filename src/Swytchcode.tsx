@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { styled } from './stitches.config';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism-twilight.css';
 import 'prismjs/components/prism-typescript.min.js';
-import { SWYTCHCODE_BASE_URL, PROGRAMMING_LANGUAGES } from "./Constants";
+import { PROGRAMMING_LANGUAGES } from "./Constants";
 import { SwytchcodeProps, Message, ListItem } from './types';
 import { SearchableDropdown } from './components/SearchableDropdown';
-import { fetchLists, fetchCode } from './services/api';
+import { fetchLists, fetchCode, chatWorkflowRequest } from './services/api';
 import {
   AppBg, AppContainer, WorkflowsPanel, PanelContent, MainContent,
   ChatHeader, BackArrow, MessagesContainer, InputForm, MessageInput,
@@ -31,7 +30,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   const [messages, setMessages] = React.useState<Message[]>([
     { id: 1, role: 'assistant', content: initialMessage }
   ]);
-  const [input, setInput] = React.useState(promptValue);
+  const [input, setInput] = React.useState('');
   const [showLeftPanel, setShowLeftPanel] = React.useState(true);
   const [copiedId, setCopiedId] = React.useState<number | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -82,24 +81,33 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     setMessages(prev => [
       ...prev,
       userMessage,
-      { id: assistantId, role: 'assistant', content: '```typescript\n' }
+      { id: assistantId, role: 'assistant', content: '' }
     ]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const data = await fetchCode('code', input, selectedMethodLanguage);
-      if (data.text) {
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === assistantId && msg.role === 'assistant'
-              ? { ...msg, content: '```typescript\n' + data.text + '\n```' }
-              : msg
-          )
-        );
-      }
+      const text = await chatWorkflowRequest([...messages, userMessage]);
+      const languageMatch = text.match(/^```(\w+)/);
+      const codeContent = text.replace(/^```\w+\n/, '').replace(/\n```$/, '');
+      const language = languageMatch ? languageMatch[1] : 'typescript';
+      
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantId && msg.role === 'assistant'
+            ? { ...msg, content: `\`\`\`${language}\n${codeContent}\n\`\`\`` }
+            : msg
+        )
+      );
     } catch (error) {
-      console.error('Error fetching code:', error);
+      console.error('Error in chat workflow request:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantId && msg.role === 'assistant'
+            ? { ...msg, content: 'Sorry, there was an error processing your request.' }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -379,7 +387,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
             </MessagesContainer>
             <InputForm onSubmit={handleSubmit}>
               <MessageInput
-                placeholder="Ask me anything..."
+                placeholder={promptValue || "Ask me anything..."}
                 value={input}
                 onChange={e => setInput(e.target.value)}
               />

@@ -14,6 +14,8 @@ A powerful and customizable chat plugin that integrates AI-powered code generati
 - 🔌 Easy integration with any web application
 - 📦 Available as UMD and ES modules
 - 🌐 Works in both modern and legacy environments
+- 🔍 Automatic language detection for code blocks
+- 📝 Customizable input placeholder
 
 ## Installation
 
@@ -91,6 +93,50 @@ function App() {
 | `initialMessage` | string | 'Hello! How can I help you today?' | Initial message displayed in the chat |
 | `sendButtonColor` | string | '#2563eb' | Color of the send button |
 | `userBubbleColor` | string | '#3b82f6' | Color of user message bubbles |
+| `promptValue` | string | 'Ask me anything...' | Placeholder text for the input field |
+
+## Code Block Support
+
+The plugin automatically detects and supports code blocks in various programming languages. When the API returns code, it will:
+
+1. Detect the programming language from the response
+2. Apply appropriate syntax highlighting
+3. Display the code in a formatted block with:
+   - Language indicator
+   - Copy button
+   - Syntax highlighting
+   - Scrollable container
+
+Supported languages:
+- TypeScript
+- Javascript
+- Python
+- Java
+- Go
+- C++
+- C#
+- Ruby
+- PHP
+- Swift
+- Kotlin
+- Rust
+- Ruby
+- C
+
+## Environment Variables
+
+The following environment variables are required for the plugin to function:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `VITE_SWYTCHCODE_API_KEY` | Your Swytchcode API key for authentication | Yes |
+
+Example `.env` file:
+```env
+VITE_SWYTCHCODE_API_KEY=your_api_key_here
+
+VITE_SWYTCHCODE_API_KEY can be obtained from [App](https://app.swytchcode.com) > Settings > Chat Key once you provide an OpenAI key.
+```
 
 ## Development
 
