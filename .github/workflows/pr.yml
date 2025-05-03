@@ -1,18 +1,105 @@
-name: Bump Release Version and Publish
+name: PR Workflow
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  bump-release:
+  version-bump:
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'chore: bump version')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-      pull-requests: write 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Extract version from commit message
+        id: extract_version
+        run: |
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore: bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update package.json version
+        run: |
+          if [ -z "${{ steps.extract_version.outputs.version }}" ]; then
+            echo "Error: Could not extract version from commit message"
+            exit 1
+          fi
+          jq --arg version "${{ steps.extract_version.outputs.version }}" '.version = $version' package.json > temp.json
+          mv temp.json package.json
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Create version bump branch
+        run: |
+          BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
+          git checkout -b $BRANCH_NAME
+
+      - name: Commit version bump
+        run: |
+          git add package.json
+          git commit -m "chore: bump version to ${{ steps.extract_version.outputs.version }}"
+
+      - name: Push version bump branch
+        run: |
+          BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
+          git push origin $BRANCH_NAME --force-with-lease || {
+            echo "Error: Failed to push branch. This might be due to conflicts."
+            echo "Please resolve conflicts manually and try again."
+            exit 1
+          }
+
+      - name: Create PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
+          gh pr create \
+            --title "chore: bump version to ${{ steps.extract_version.outputs.version }}" \
+            --body "Automated version bump to ${{ steps.extract_version.outputs.version }}" \
+            --base main \
+            --head $BRANCH_NAME || {
+              echo "Error: Failed to create PR. This might be due to an existing PR."
+              echo "Please check if a PR already exists for this version bump."
+              exit 1
+          }
+
+      - name: Publish to npm
+        if: success()
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm publish --access public || {
+            echo "Error: Failed to publish to npm."
+            echo "This might be due to:"
+            echo "1. Invalid npm token"
+            echo "2. Package already published with this version"
+            echo "3. Network issues"
+            exit 1
+          }
+
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,87 +108,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Get latest release version
-        id: get_latest_release
-        run: |
-          latest_release=$(gh release list --limit 1 --json tagName -q '.[0].tagName')
-          echo "Latest release: $latest_release"
-          echo "latest_release=${latest_release}" >> $GITHUB_OUTPUT
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Calculate next version
-        id: calc_version
-        run: |
-          current="${{ steps.get_latest_release.outputs.latest_release }}"
-          version="${current#v}"
-          IFS='.' read -r major minor patch <<< "$version"
-
-          # Increment patch version
-          new_patch=$((patch + 1))
-
-          # Check if patch is greater than or equal to 10
-          if [ $new_patch -ge 10 ]; then
-            new_patch=0
-            minor=$((minor + 1))
-          fi
-
-          # Check if minor is greater than or equal to 10
-          if [ $minor -ge 10 ]; then
-            minor=0
-            major=$((major + 1))
-          fi
-
-          new_version="v${major}.${minor}.${new_patch}"
-          package_version="${major}.${minor}.${new_patch}"
-          echo "Next version: $new_version"
-          echo "Package version: $package_version"
-          echo "new_version=${new_version}" >> $GITHUB_OUTPUT
-          echo "package_version=${package_version}" >> $GITHUB_OUTPUT
-
-      - name: Update package.json version and create a pull request
-        run: |
-          package_version=${{ steps.calc_version.outputs.package_version }}
-          echo "Updating package.json to version: $package_version"
-          jq --arg version "$package_version" '.version = $version' package.json > temp.json && mv temp.json package.json
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b bump-version-$package_version
-          git add package.json
-          git commit -m "chore: bump version to $package_version"
-          git pull --rebase origin bump-version-$package_version || git rebase --abort
-          git push origin bump-version-$package_version
-          gh pr create --title "chore: bump version to $package_version" --body "Automated version bump to $package_version" --base main --head bump-version-$package_version
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create new release
-        run: |
-          gh release create ${{ steps.calc_version.outputs.new_version }} --generate-notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        run: |
-          rm -rf node_modules package-lock.json
-          npm install --no-package-lock
+        run: npm install
 
-      - name: Build package
-        run: |
-          ROLLUP_NATIVE=false npm run build
+      - name: Run tests
+        run: npm test
 
-      - name: Debug package.json
-        run: |
-          echo "Current package.json contents:"
-          cat package.json
-          echo "NPM_TOKEN exists: ${{ secrets.NPM_TOKEN != '' }}"
-
-      - name: Publish to npm
-        run: |
-          echo "Attempting to publish to npm..."
-          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build
+        run: npm run build
