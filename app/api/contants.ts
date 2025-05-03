@@ -1,1 +1,0 @@
-export const SWYTCHCODE_BASE_URL : string = "https://api.swytchcode.com/v1"

@@ -1,89 +1,210 @@
 # Swytchcode Chat Plugin
 
-A Next.js library for chat functionality.
+A powerful and customizable chat plugin that integrates AI-powered code generation and assistance into your applications.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![npm version](https://badge.fury.io/js/swytchcode.svg)
+[![Check compilation](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml/badge.svg)](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml)
+
+## Features
+
+- 🤖 AI-powered code generation and assistance
+- 💬 Interactive chat interface
+- 🎨 Customizable UI with theme support
+- 🔌 Easy integration with any web application
+- 📦 Available as UMD and ES modules
+- 🌐 Works in both modern and legacy environments
+- 🔍 Automatic language detection for code blocks
+- 📝 Customizable input placeholder
 
 ## Installation
 
-```bash
-# Using yarn
-yarn add swytchcode
+### NPM
 
-# Using npm
+```bash
 npm install swytchcode
+```
+
+### Yarn
+
+```bash
+yarn add swytchcode
+```
+
+### CDN
+
+```html
+<script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
 ```
 
 ## Usage
 
-```tsx
-import { SwytchcodeChat } from 'swytchcode';
+### React
 
-export default function MyComponent() {
+```jsx
+import { Swytchcode } from 'swytchcode';
+
+function App() {
   return (
-    <SwytchcodeChat
-      initialMessage="Hello! How can I help you today?"
-      placeholder="Type your message..."
-      theme="light"
+    <Swytchcode
+      borderColor="#3b82f6"
+      height="600px"
+      width="100%"
+      initialMessage="Welcome to the Swytchcode Chat Plugin!"
     />
   );
 }
 ```
 
+### Vanilla JavaScript
 
-## Requirements
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
+</head>
+<body>
+  <div id="chat-plugin"></div>
+  <script>
+    const root = ReactDOM.createRoot(document.getElementById('chat-plugin'));
+    root.render(
+      React.createElement(Swytchcode, {
+        borderColor: '#3b82f6',
+        height: '600px',
+        width: '100%',
+        initialMessage: 'Welcome to the Swytchcode Chat Plugin!'
+      })
+    );
+  </script>
+</body>
+</html>
+```
 
-This package requires the following peer dependencies:
-- React 16.8.0 or higher
-- React DOM 16.8.0 or higher
-- Next.js 13.0.0 or higher
+## Props
 
-## Getting Started
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `borderColor` | string | '#e5e7eb' | Color of the plugin border |
+| `height` | string \| number | '80vh' | Height of the plugin |
+| `width` | string \| number | '100%' | Width of the plugin |
+| `initialMessage` | string | 'Hello! How can I help you today?' | Initial message displayed in the chat |
+| `sendButtonColor` | string | '#2563eb' | Color of the send button |
+| `userBubbleColor` | string | '#3b82f6' | Color of user message bubbles |
+| `promptValue` | string | 'Ask me anything...' | Placeholder text for the input field |
 
-First, install the dependencies:
+## Code Block Support
 
+The plugin automatically detects and supports code blocks in various programming languages. When the API returns code, it will:
+
+1. Detect the programming language from the response
+2. Apply appropriate syntax highlighting
+3. Display the code in a formatted block with:
+   - Language indicator
+   - Copy button
+   - Syntax highlighting
+   - Scrollable container
+
+Supported languages:
+- TypeScript
+- Javascript
+- Python
+- Java
+- Go
+- C++
+- C#
+- Ruby
+- PHP
+- Swift
+- Kotlin
+- Rust
+- Ruby
+- C
+
+## Environment Variables
+
+The following environment variables are required for the plugin to function:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `VITE_SWYTCHCODE_API_KEY` | Your Swytchcode API key for authentication | Yes |
+
+Example `.env` file:
+```env
+VITE_SWYTCHCODE_API_KEY=your_api_key_here
+
+VITE_SWYTCHCODE_API_KEY can be obtained from [App](https://app.swytchcode.com) > Settings > Chat Key once you provide an OpenAI key.
+```
+
+## Development
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/swytchcode/swytchcode.git
+cd swytchcode
+```
+
+2. Install dependencies:
 ```bash
 npm install
 # or
 yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then, run the development server:
-
+3. Start the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Building
 
-## Environment Variables
+To build the project:
 
-Create a `.env.local` file in the root directory with the following variables:
-
-```
-OPENAI_API_KEY=your_openai_api_key
-SWYTCHCODE_API_KEY=
-```
-
-
-## Development
-
-To link this package for local development:
-
-1. In this project:
 ```bash
-yarn link
+npm run build
+# or
+yarn build
 ```
 
-2. In your project:
-```bash
-yarn link swytchcode
-```
+This will generate the following files in the `dist` directory:
+- `swytchcode.umd.js` - For browser/vanilla JS usage
+- `swytchcode.es.js` - For ES modules usage
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/zuSXSv5GWs)
+
+For support, please:
+- Join our [Discord community](https://discord.com/invite/zuSXSv5GWs)
+- Open an issue in the GitHub repository
+
+## Acknowledgments
+
+- Thanks to all our contributors
+- Built with [React](https://reactjs.org/)
+- Styled with [Stitches](https://stitches.dev/)
