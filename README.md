@@ -115,13 +115,14 @@ Supported languages:
 - Go
 - C++
 - C#
+- C
 - Ruby
 - PHP
 - Swift
 - Kotlin
 - Rust
 - Ruby
-- C
+
 
 ## Environment Variables
 
