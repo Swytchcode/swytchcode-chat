@@ -60,7 +60,7 @@ jobs:
       - name: Commit version bump
         run: |
           git add package.json
-          git commit -m "chore: bump version to ${{ steps.extract_version.outputs.version }}"
+          git commit -m "chore bump version to ${{ steps.extract_version.outputs.version }}"
 
       - name: Push version bump branch
         run: |
@@ -77,7 +77,7 @@ jobs:
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           gh pr create \
-            --title "chore: bump version to ${{ steps.extract_version.outputs.version }}" \
+            --title "chore bump version to ${{ steps.extract_version.outputs.version }}" \
             --body "Automated version bump to ${{ steps.extract_version.outputs.version }}" \
             --base main \
             --head $BRANCH_NAME || {
