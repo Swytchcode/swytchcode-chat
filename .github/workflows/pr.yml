@@ -9,7 +9,7 @@ on:
 jobs:
   version-bump:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore bump version to')
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'chore: bump version')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,9 +23,6 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Remove node_modules
-        run: rm -rf node_modules package-lock.json
-
       - name: Install dependencies
         run: npm install
 
@@ -35,7 +32,11 @@ jobs:
       - name: Extract version from commit message
         id: extract_version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore: bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
+          if [ -z "$VERSION" ]; then
+            echo "Error: Could not extract version from commit message"
+            exit 1
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update package.json version
@@ -47,57 +48,37 @@ jobs:
           jq --arg version "${{ steps.extract_version.outputs.version }}" '.version = $version' package.json > temp.json
           mv temp.json package.json
 
-      - name: Configure Git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
       - name: Create version bump branch
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
 
-      - name: Commit version bump
-        run: |
-          git add package.json
-          git commit -m "chore bump version to ${{ steps.extract_version.outputs.version }}"
-
-      - name: Push version bump branch
-        run: |
-          BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
-          git push origin $BRANCH_NAME --force-with-lease || {
-            echo "Error: Failed to push branch. This might be due to conflicts."
-            echo "Please resolve conflicts manually and try again."
-            exit 1
-          }
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          tag_name: v${{ steps.extract_version.outputs.version }}
+          release_name: Release v${{ steps.extract_version.outputs.version }}
+          draft: false
+          prerelease: false
 
       - name: Create PR
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           gh pr create \
-            --title "chore bump version to ${{ steps.extract_version.outputs.version }}" \
+            --title "chore: bump version to ${{ steps.extract_version.outputs.version }}" \
             --body "Automated version bump to ${{ steps.extract_version.outputs.version }}" \
             --base main \
-            --head $BRANCH_NAME || {
-              echo "Error: Failed to create PR. This might be due to an existing PR."
-              echo "Please check if a PR already exists for this version bump."
-              exit 1
-          }
+            --head $BRANCH_NAME
 
       - name: Publish to npm
         if: success()
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          npm publish --access public || {
-            echo "Error: Failed to publish to npm."
-            echo "This might be due to:"
-            echo "1. Invalid npm token"
-            echo "2. Package already published with this version"
-            echo "3. Network issues"
-            exit 1
-          }
-
-
+          npm publish --access public
