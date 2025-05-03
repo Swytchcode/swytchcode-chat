@@ -1,6 +1,6 @@
 {
   "name": "swytchcode",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "main": "dist/swytchcode.umd.js",
   "module": "dist/swytchcode.es.js",
