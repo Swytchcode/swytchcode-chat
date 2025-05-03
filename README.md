@@ -3,7 +3,7 @@
 A powerful and customizable chat plugin that integrates AI-powered code generation and assistance into your applications.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![npm version](https://badge.fury.io/js/swytchcode.svg)
+![npm version](https://badge.fury.io/js/swytchcode.svg)
 [![Check compilation](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml/badge.svg)](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml)
 
 ## Features
@@ -151,7 +151,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, please open an issue in the GitHub repository or contact us at support@swytchcode.com.
+[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/invite/zuSXSv5GWs)
+
+For support, please:
+- Join our [Discord community](https://discord.com/invite/zuSXSv5GWs)
+- Open an issue in the GitHub repository
 
 ## Acknowledgments
 
