@@ -23,8 +23,6 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
 
 /dist
 .rollup.cache
-.next
