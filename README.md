@@ -134,9 +134,9 @@ The following environment variables are required for the plugin to function:
 Example `.env` file:
 ```env
 VITE_SWYTCHCODE_API_KEY=your_api_key_here
-
-VITE_SWYTCHCODE_API_KEY can be obtained from [App](https://app.swytchcode.com) > Settings > Chat Key once you provide an OpenAI key.
 ```
+**VITE_SWYTCHCODE_API_KEY** can be obtained from **[App](https://app.swytchcode.com) > Settings > Chat Key** once you provide an OpenAI key.
+
 
 ## Development
 
