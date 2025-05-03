@@ -55,16 +55,15 @@ jobs:
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           git checkout -b $BRANCH_NAME
-          git push origin $BRANCH_NAME
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
         with:
           tag_name: v${{ steps.extract_version.outputs.version }}
-          release_name: Release v${{ steps.extract_version.outputs.version }}
+          name: Release v${{ steps.extract_version.outputs.version }}
           draft: false
           prerelease: false
 
