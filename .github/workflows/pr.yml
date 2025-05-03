@@ -55,6 +55,11 @@ jobs:
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           git checkout -b $BRANCH_NAME
+          git add package.json
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "chore bump version to ${{ steps.extract_version.outputs.version }}"
+          git push origin $BRANCH_NAME
 
       - name: Create Release
         id: create_release
@@ -69,7 +74,7 @@ jobs:
 
       - name: Create PR
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
           gh pr create \
