@@ -72,16 +72,22 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Create PR
+      - name: Create and Merge PR
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="bump-version-${{ steps.extract_version.outputs.version }}"
-          gh pr create \
+          # Create PR
+          PR_NUMBER=$(gh pr create \
             --title "chore bump version to ${{ steps.extract_version.outputs.version }}" \
             --body "Automated version bump to ${{ steps.extract_version.outputs.version }}" \
             --base main \
-            --head $BRANCH_NAME
+            --head $BRANCH_NAME \
+            --json number \
+            --jq '.number')
+          
+          # Merge PR
+          gh pr merge $PR_NUMBER --merge --delete-branch
 
       - name: Publish to npm
         if: success()
