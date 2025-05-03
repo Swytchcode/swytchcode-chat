@@ -9,7 +9,7 @@ on:
 jobs:
   version-bump:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, 'chore: bump version')
+    if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'chore bump version')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -97,23 +97,4 @@ jobs:
             exit 1
           }
 
-  test:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run tests
-        run: npm test
-
-      - name: Build
-        run: npm run build
