@@ -23,7 +23,7 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Remove npm
+      - name: Remove node_modules
         run: rm -rf node_modules
 
       - name: Install dependencies
