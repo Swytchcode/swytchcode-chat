@@ -7,14 +7,14 @@ import 'prismjs/themes/prism-twilight.css';
 // @ts-ignore
 import 'prismjs/components/prism-typescript.min.js';
 
-// Add prop types
-interface SwytchcodeProps {
+export interface SwytchcodeProps {
   initialMessage?: string;
   promptValue?: string;
   sendButtonColor?: string;
   userBubbleColor?: string;
   height?: string | number;
   width?: string | number;
+  borderColor?: string;
 }
 
 const AppBg = styled('div', {
@@ -31,6 +31,19 @@ const AppContainer = styled('div', {
   minHeight: '80vh',
   background: 'none',
   boxShadow: 'none',
+  border: '1px solid',
+  borderRadius: '1rem',
+  overflow: 'hidden',
+  variants: {
+    borderColor: {
+      default: {
+        borderColor: '#e5e7eb'
+      }
+    }
+  },
+  defaultVariants: {
+    borderColor: 'default'
+  }
 });
 
 const WorkflowsPanel = styled('div', {
@@ -385,6 +398,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   userBubbleColor = '#3b82f6',
   height = '80vh',
   width = '100%',
+  borderColor = '#e5e7eb',
 }) => {
   const [activeTab, setActiveTab] = React.useState('methods');
   const [selectedLanguage, setSelectedLanguage] = React.useState('');
@@ -581,7 +595,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     <div style={{ height, width }} className="swytchcode-root">
       <GlobalStyles />
       <AppBg>
-        <AppContainer>
+        <AppContainer css={{ borderColor: borderColor }}>
           {showLeftPanel && (
             <WorkflowsPanel>
               <div style={{ opacity: showLeftPanel ? 1 : 0, transition: 'opacity 0.3s' }}>

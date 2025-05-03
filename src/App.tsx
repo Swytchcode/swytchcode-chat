@@ -17,6 +17,7 @@ function App() {
         userBubbleColor="#1976d2"
         height="600px"
         width="1400px"
+        borderColor="#e5e7eb"
       />
     </div>
   );
