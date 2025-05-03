@@ -1,6 +1,6 @@
-# Swytchcode Chat Plugin
+# Swytchcode Chat Library
 
-A powerful and customizable chat plugin that integrates AI-powered code generation and assistance into your applications.
+A powerful and customizable chat library that integrates AI-powered code generation and assistance into your applications.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![npm version](https://badge.fury.io/js/swytchcode.svg)
@@ -50,7 +50,7 @@ function App() {
       borderColor="#3b82f6"
       height="600px"
       width="100%"
-      initialMessage="Welcome to the Swytchcode Chat Plugin!"
+      initialMessage="Welcome to the Swytchcode Chat Library!"
     />
   );
 }
@@ -67,15 +67,15 @@ function App() {
   <script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
 </head>
 <body>
-  <div id="chat-plugin"></div>
+  <div id="chat-library"></div>
   <script>
-    const root = ReactDOM.createRoot(document.getElementById('chat-plugin'));
+    const root = ReactDOM.createRoot(document.getElementById('chat-library'));
     root.render(
       React.createElement(Swytchcode, {
         borderColor: '#3b82f6',
         height: '600px',
         width: '100%',
-        initialMessage: 'Welcome to the Swytchcode Chat Plugin!'
+        initialMessage: 'Welcome to the Swytchcode Chat Library!'
       })
     );
   </script>
@@ -87,9 +87,9 @@ function App() {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `borderColor` | string | '#e5e7eb' | Color of the plugin border |
-| `height` | string \| number | '80vh' | Height of the plugin |
-| `width` | string \| number | '100%' | Width of the plugin |
+| `borderColor` | string | '#e5e7eb' | Color of the library border |
+| `height` | string \| number | '80vh' | Height of the library |
+| `width` | string \| number | '100%' | Width of the library |
 | `initialMessage` | string | 'Hello! How can I help you today?' | Initial message displayed in the chat |
 | `sendButtonColor` | string | '#2563eb' | Color of the send button |
 | `userBubbleColor` | string | '#3b82f6' | Color of user message bubbles |
@@ -97,7 +97,7 @@ function App() {
 
 ## Code Block Support
 
-The plugin automatically detects and supports code blocks in various programming languages. When the API returns code, it will:
+The library automatically detects and supports code blocks in various programming languages. When the API returns code, it will:
 
 1. Detect the programming language from the response
 2. Apply appropriate syntax highlighting
@@ -125,7 +125,7 @@ Supported languages:
 
 ## Environment Variables
 
-The following environment variables are required for the plugin to function:
+The following environment variables are required for the library to function:
 
 | Variable | Description | Required |
 |----------|-------------|----------|
