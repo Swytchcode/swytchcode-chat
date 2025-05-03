@@ -1,6 +1,6 @@
 # Swytchcode Chat Plugin
 
-A Next.js library for chat functionality.
+A React library for chat functionality interacting with Swytchcode. 
 
 ## Installation
 
@@ -15,26 +15,23 @@ npm install swytchcode
 ## Usage
 
 ```tsx
-import { SwytchcodeChat } from 'swytchcode';
+import { Swytchcode } from 'swytchcode';
 
 export default function MyComponent() {
   return (
-    <SwytchcodeChat
-      initialMessage="Hello! How can I help you today?"
-      placeholder="Type your message..."
-      theme="light"
-    />
+    <Swytchcode
+        initialMessage="Welcome to Swytchcode! Ask me anything."
+        promptValue="Type your question..."
+        sendButtonColor="#1a73e8"
+        userBubbleColor="#1976d2"
+        height="600px"
+        width="1400px"
+      />
   );
 }
 ```
 
 
-## Requirements
-
-This package requires the following peer dependencies:
-- React 16.8.0 or higher
-- React DOM 16.8.0 or higher
-- Next.js 13.0.0 or higher
 
 ## Getting Started
 

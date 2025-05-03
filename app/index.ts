@@ -1,1 +1,0 @@
-export { SwytchcodeChat } from '../components/chat'; 
