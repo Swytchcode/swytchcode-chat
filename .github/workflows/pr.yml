@@ -71,8 +71,7 @@ jobs:
           git checkout -b bump-version-$package_version
           git add package.json
           git commit -m "chore: bump version to $package_version"
-          git fetch origin bump-version-$package_version || true
-          git rebase origin/bump-version-$package_version || true
+          git pull --rebase origin bump-version-$package_version || git rebase --abort
           git push origin bump-version-$package_version
           gh pr create --title "chore: bump version to $package_version" --body "Automated version bump to $package_version" --base main --head bump-version-$package_version
         env:
