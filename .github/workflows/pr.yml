@@ -35,11 +35,13 @@ jobs:
       - name: Extract version from commit message
         id: extract_version
         run: |
+          echo "Commit Message: '${{ github.event.head_commit.message }}'"
           VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oP 'chore bump version to \K[0-9]+\.[0-9]+\.[0-9]+')
           if [ -z "$VERSION" ]; then
             echo "Error: Could not extract version from commit message"
             exit 1
           fi
+          echo "Extracted Version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Update package.json version
