@@ -125,18 +125,28 @@ Supported languages:
 
 ## Environment Variables
 
-The following environment variables are required for the library to function:
+The following environment variables are supported for the API key:
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `VITE_SWYTCHCODE_API_KEY` | Your Swytchcode API key for authentication | Yes |
+| Variable | Framework | Description |
+|----------|-----------|-------------|
+| `SWYTCHCODE_API_KEY` | Universal | Your Swytchcode API key for authentication |
+| `VITE_SWYTCHCODE_API_KEY` | Vite | Your Swytchcode API key for authentication |
+| `NEXT_PUBLIC_SWYTCHCODE_API_KEY` | Next.js | Your Swytchcode API key for authentication |
+| `REACT_APP_SWYTCHCODE_API_KEY` | Create React App | Your Swytchcode API key for authentication |
 
 Example `.env` file:
 ```env
+# Use any of these variable names
+SWYTCHCODE_API_KEY=your_api_key_here
+# or
 VITE_SWYTCHCODE_API_KEY=your_api_key_here
+# or
+NEXT_PUBLIC_SWYTCHCODE_API_KEY=your_api_key_here
+# or
+REACT_APP_SWYTCHCODE_API_KEY=your_api_key_here
 ```
-**VITE_SWYTCHCODE_API_KEY** can be obtained from **[App](https://app.swytchcode.com) > Settings > Chat Key** once you provide an OpenAI key.
 
+**API Key** can be obtained from **[App](https://app.swytchcode.com) > Settings > Chat Key** once you provide an OpenAI key.
 
 ## Development
 
