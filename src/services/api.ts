@@ -1,12 +1,25 @@
 import { SWYTCHCODE_BASE_URL } from '../Constants';
 
+const getApiKey = () => {
+  return (
+    import.meta.env.SWYTCHCODE_API_KEY || 
+    import.meta.env.VITE_SWYTCHCODE_API_KEY || 
+    import.meta.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
+    import.meta.env.REACT_APP_SWYTCHCODE_API_KEY || 
+    process.env.SWYTCHCODE_API_KEY || 
+    process.env.VITE_SWYTCHCODE_API_KEY || 
+    process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
+    process.env.REACT_APP_SWYTCHCODE_API_KEY
+  );
+};
+
 export const fetchLists = async (type: 'workflows' | 'methods') => {
   console.log('Fetching lists for type:', type);
   const response = await fetch(`${SWYTCHCODE_BASE_URL}/chat-list`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': import.meta.env.VITE_SWYTCHCODE_API_KEY || ''
+      'x-api-key': getApiKey() || ''
     },
     body: JSON.stringify({ param: type })
   });
@@ -21,7 +34,7 @@ export const fetchCode = async (type: 'code' | 'workflow', prompt: string, langu
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': import.meta.env.VITE_SWYTCHCODE_API_KEY || ''
+      'x-api-key': getApiKey() || ''
     },
     body: JSON.stringify({ type, prompt, language })
   });
@@ -41,7 +54,7 @@ export const chatWorkflowRequest = async (messages: { content: string }[]) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': import.meta.env.VITE_SWYTCHCODE_API_KEY || ''
+      'x-api-key': getApiKey() || ''
     },
     body: JSON.stringify(payload)
   });

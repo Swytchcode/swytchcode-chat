@@ -44,7 +44,15 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   const methods = methodsList.map(m => m.name);
 
   // Check for missing API key
-  const apiKey = import.meta.env.VITE_SWYTCHCODE_API_KEY;
+  const apiKey = 
+    import.meta.env.SWYTCHCODE_API_KEY || 
+    import.meta.env.VITE_SWYTCHCODE_API_KEY || 
+    import.meta.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
+    import.meta.env.REACT_APP_SWYTCHCODE_API_KEY || 
+    process.env.SWYTCHCODE_API_KEY || 
+    process.env.VITE_SWYTCHCODE_API_KEY || 
+    process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
+    process.env.REACT_APP_SWYTCHCODE_API_KEY;
   const isApiKeyMissing = !apiKey || apiKey.trim() === '';
 
   const scrollToBottom = () => {
