@@ -9,7 +9,7 @@ import { fetchLists, fetchCode, chatWorkflowRequest } from './services/api';
 import {
   AppBg, AppContainer, WorkflowsPanel, PanelContent, MainContent,
   ChatHeader, BackArrow, MessagesContainer, InputForm, MessageInput,
-  SendBtn, Throbber, GlobalStyles, Tabs, Tab, Label, FormGroup,
+  SendBtn, GlobalStyles, Tabs, Tab, Label, FormGroup,
   SearchInput, WorkflowsList, WorkflowItem
 } from './components/styled';
 
@@ -109,32 +109,23 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
               const jsonStr = line.slice(5).trim();
               if (jsonStr) {
                 const data = JSON.parse(jsonStr);
-                console.log('Parsed data:', data);
                 let content = '';
-                
-                if (data.type === 'result' && data.data) {
-                  // For final result, decode base64 and show the code
+                if (data.data) {
+                  // Final result (base64)
                   content = atob(data.data);
-                  console.log('Decoded result:', content);
-                } else if (data.type === 'progress' && data.message) {
-                  // For progress updates, show the message
+                } else if (data.message) {
+                  // Progress update
                   content = data.message;
-                  console.log('Progress message:', content);
-                } else if (data.type === 'error' && data.error) {
-                  // For errors, show the error message
-                  content = `Error: ${data.error}`;
-                  console.log('Error message:', content);
                 }
-
                 if (content) {
-                  console.log('Setting content:', content);
-                  setMessages(prev =>
-                    prev.map(msg =>
+                  setMessages(prev => {
+                    const newMessages = prev.map(msg =>
                       msg.id === assistantId && msg.role === 'assistant'
-                        ? { ...msg, content: msg.content ? `${msg.content}\n${content}` : content }
+                        ? { ...msg, content }
                         : msg
-                    )
-                  );
+                    );
+                    return newMessages;
+                  });
                 }
               }
             }
@@ -154,6 +145,8 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       );
     } finally {
       setIsLoading(false);
+      // Remove empty assistant messages after streaming
+      setMessages(prev => prev.filter(msg => msg.role !== 'assistant' || (msg.content && msg.content.trim() !== '')));
     }
   };
 
@@ -180,32 +173,23 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
               const jsonStr = line.slice(5).trim();
               if (jsonStr) {
                 const data = JSON.parse(jsonStr);
-                console.log('Parsed data:', data);
                 let content = '';
-                
-                if (data.type === 'result' && data.data) {
-                  // For final result, decode base64 and show the code
+                if (data.data) {
+                  // Final result (base64)
                   content = atob(data.data);
-                  console.log('Decoded result:', content);
-                } else if (data.type === 'progress' && data.message) {
-                  // For progress updates, show the message
+                } else if (data.message) {
+                  // Progress update
                   content = data.message;
-                  console.log('Progress message:', content);
-                } else if (data.type === 'error' && data.error) {
-                  // For errors, show the error message
-                  content = `Error: ${data.error}`;
-                  console.log('Error message:', content);
                 }
-
                 if (content) {
-                  console.log('Setting content:', content);
-                  setMessages(prev =>
-                    prev.map(msg =>
+                  setMessages(prev => {
+                    const newMessages = prev.map(msg =>
                       msg.id === assistantId && msg.role === 'assistant'
-                        ? { ...msg, content: msg.content ? `${msg.content}\n${content}` : content }
+                        ? { ...msg, content }
                         : msg
-                    )
-                  );
+                    );
+                    return newMessages;
+                  });
                 }
               }
             }
@@ -226,6 +210,8 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       );
     } finally {
       setIsLoading(false);
+      // Remove empty assistant messages after streaming
+      setMessages(prev => prev.filter(msg => msg.role !== 'assistant' || (msg.content && msg.content.trim() !== '')));
     }
   };
 
@@ -320,7 +306,8 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
         borderRadius: 8,
         padding: '1rem',
         maxWidth: '80%',
-        margin: '0.5rem 0'
+        margin: '0.5rem 0',
+        whiteSpace: 'pre-wrap'
       }}>
         <div style={{ margin: 0, padding: 0 }}>
           {msg.content}
@@ -479,11 +466,14 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                 </div>
               ) : (
                 <>
-                  {messages.map(msg => (
-                    <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-                      {renderMessage(msg)}
-                    </div>
-                  ))}
+                  {messages
+                    .filter(msg => msg.content && msg.content.trim() !== '')
+                    .map(msg => (
+                      <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+                        {renderMessage(msg)}
+                      </div>
+                    ))}
+                  
                   <div ref={messagesEndRef} />
                 </>
               )}
