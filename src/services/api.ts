@@ -13,7 +13,6 @@ const getApiKey = () => {
 };
 
 export const fetchLists = async (type: 'workflows' | 'methods') => {
-  console.log('Fetching lists for type:', type, "Key", getApiKey());
   const response = await fetch(`/api/chat-list`, {
 
     method: 'POST',
@@ -24,7 +23,6 @@ export const fetchLists = async (type: 'workflows' | 'methods') => {
     body: JSON.stringify({ param: type })
   });
   const data = await response.json();
-  console.log('Lists response:', data);
   return data;
 };
 
@@ -34,7 +32,6 @@ export const fetchCode = async (
   language: string,
   onMessage?: (chunk: string) => void
 ) => {
-  console.log('Fetching code:', { type, prompt, language });
   const response = await fetch(`/api/stream/chat-fetch-code`, {
     method: 'POST',
     headers: {
@@ -73,7 +70,6 @@ export const fetchCode = async (
     }
   } else {
     const data = await response.json();
-    console.log('Code response:', data);
     return data;
   }
 };

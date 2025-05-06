@@ -69,13 +69,10 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching initial data...');
         const workflowsData = await fetchLists('workflows');
-        console.log('Workflows data:', workflowsData);
         setWorkflowsList(workflowsData.data || []);
 
         const methodsData = await fetchLists('methods');
-        console.log('Methods data:', methodsData);
         setMethodsList(methodsData.data || []);
       } catch (error) {
         console.error('Error fetching lists:', error);
@@ -100,7 +97,6 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
 
     try {
       await chatWorkflowRequest([...messages, userMessage], (chunk) => {
-        console.log('Received chunk:', chunk);
         try {
           // Handle SSE format
           const lines = chunk.split('\n');
@@ -164,7 +160,6 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     
     try {
       await fetchCode(type, text, language, (chunk) => {
-        console.log('Received chunk:', chunk);
         try {
           // Handle SSE format
           const lines = chunk.split('\n');
@@ -393,7 +388,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                         />
                       </FormGroup>
                       <Label style={{ marginTop: '1rem', marginBottom: '0.5rem', fontWeight: 600 }}>
-                        Most used methods
+                        Methods List
                       </Label>
                       <WorkflowsList>
                         {methods
@@ -423,7 +418,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                   <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
                 )}
               </BackArrow>
-              <span style={{ marginLeft: '2.5rem', fontWeight: 600, fontSize: '1.08rem', whiteSpace: 'nowrap' }}>Chat with AI Assistant</span>
+              <span style={{ marginLeft: '2.5rem', fontWeight: 600, fontSize: '1.08rem', whiteSpace: 'nowrap' }}>Chat with API AI Assistant</span>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                 <a
                   href="https://swytchcode.com"
