@@ -99,18 +99,50 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     setIsLoading(true);
 
     try {
-      const text = await chatWorkflowRequest([...messages, userMessage]);
-      const languageMatch = text.match(/^```(\w+)/);
-      const codeContent = text.replace(/^```\w+\n/, '').replace(/\n```$/, '');
-      const language = languageMatch ? languageMatch[1] : 'typescript';
-      
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantId && msg.role === 'assistant'
-            ? { ...msg, content: `\`\`\`${language}\n${codeContent}\n\`\`\`` }
-            : msg
-        )
-      );
+      await chatWorkflowRequest([...messages, userMessage], (chunk) => {
+        console.log('Received chunk:', chunk);
+        try {
+          // Handle SSE format
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const jsonStr = line.slice(5).trim();
+              if (jsonStr) {
+                const data = JSON.parse(jsonStr);
+                console.log('Parsed data:', data);
+                let content = '';
+                
+                if (data.type === 'result' && data.data) {
+                  // For final result, decode base64 and show the code
+                  content = atob(data.data);
+                  console.log('Decoded result:', content);
+                } else if (data.type === 'progress' && data.message) {
+                  // For progress updates, show the message
+                  content = data.message;
+                  console.log('Progress message:', content);
+                } else if (data.type === 'error' && data.error) {
+                  // For errors, show the error message
+                  content = `Error: ${data.error}`;
+                  console.log('Error message:', content);
+                }
+
+                if (content) {
+                  console.log('Setting content:', content);
+                  setMessages(prev =>
+                    prev.map(msg =>
+                      msg.id === assistantId && msg.role === 'assistant'
+                        ? { ...msg, content: msg.content ? `${msg.content}\n${content}` : content }
+                        : msg
+                    )
+                  );
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
+        }
+      });
     } catch (error) {
       console.error('Error in chat workflow request:', error);
       setMessages(prev =>
@@ -128,35 +160,70 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   const handleWorkflowOrMethodClick = async (text: string) => {
     const userMessage: Message = { id: Date.now(), role: 'user', content: text };
     const assistantId = userMessage.id + 1;
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage, { id: assistantId, role: 'assistant', content: '' }]);
     scrollToBottom();
 
     const type = activeTab === 'methods' ? 'code' : 'workflow';
     const language = activeTab === 'methods' 
       ? (selectedMethodLanguage || 'node.js')
       : (selectedLanguage || 'node.js');
-    
     setIsLoading(true);
+    
     try {
-      const data = await fetchCode(type, text, language);
-      console.log("dATA",data);
-      if (data.data?.code) {
-        const decodedCode = atob(data.data.code);
-        const languageMatch = decodedCode.match(/^```(\w+)/);
-        const codeContent = decodedCode.replace(/^```\w+\n/, '').replace(/\n```$/, '');
-        
-        setMessages(prev => [
-          ...prev,
-          { 
-            id: assistantId, 
-            role: 'assistant', 
-            content: `\`\`\`${languageMatch ? languageMatch[1] : 'typescript'}\n${codeContent}\n\`\`\`` 
+      await fetchCode(type, text, language, (chunk) => {
+        console.log('Received chunk:', chunk);
+        try {
+          // Handle SSE format
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const jsonStr = line.slice(5).trim();
+              if (jsonStr) {
+                const data = JSON.parse(jsonStr);
+                console.log('Parsed data:', data);
+                let content = '';
+                
+                if (data.type === 'result' && data.data) {
+                  // For final result, decode base64 and show the code
+                  content = atob(data.data);
+                  console.log('Decoded result:', content);
+                } else if (data.type === 'progress' && data.message) {
+                  // For progress updates, show the message
+                  content = data.message;
+                  console.log('Progress message:', content);
+                } else if (data.type === 'error' && data.error) {
+                  // For errors, show the error message
+                  content = `Error: ${data.error}`;
+                  console.log('Error message:', content);
+                }
+
+                if (content) {
+                  console.log('Setting content:', content);
+                  setMessages(prev =>
+                    prev.map(msg =>
+                      msg.id === assistantId && msg.role === 'assistant'
+                        ? { ...msg, content: msg.content ? `${msg.content}\n${content}` : content }
+                        : msg
+                    )
+                  );
+                }
+              }
+            }
           }
-        ]);
+        } catch (e) {
+          console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
+        }
         scrollToBottom();
-      }
+      });
     } catch (error) {
       console.error('Error fetching code:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantId && msg.role === 'assistant'
+            ? { ...msg, content: 'Sorry, there was an error processing your request.' }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
     }
@@ -417,7 +484,6 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                       {renderMessage(msg)}
                     </div>
                   ))}
-                  {isLoading && <Throbber>Thinking...</Throbber>}
                   <div ref={messagesEndRef} />
                 </>
               )}

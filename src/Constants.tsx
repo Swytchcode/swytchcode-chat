@@ -1,4 +1,12 @@
-export const SWYTCHCODE_BASE_URL : string = "https://api.swytchcode.com/v1"
+// export const SWYTCHCODE_BASE_URL : string = "https://api.swytchcode.com/v1"
+// export const SWYTCHCODE_STREAM_BASE_URL : string = "https://stream.swytchcode.com:8443"
+
+// export const SWYTCHCODE_BASE_URL : string = "https://dev-api.wreken.in.net/v1"
+// export const SWYTCHCODE_STREAM_BASE_URL : string = "https://dev-stream.wreken.in.net:8443"
+
+export const SWYTCHCODE_BASE_URL : string = "https://localhost/v1"
+export const SWYTCHCODE_STREAM_BASE_URL : string = "https://localhost:8443"
+
 
 export const PROGRAMMING_LANGUAGES = [
     { value: "node.js", label: "Node.js" },
