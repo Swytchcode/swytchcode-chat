@@ -1,4 +1,3 @@
-import { SWYTCHCODE_BASE_URL } from '../Constants';
 
 const getApiKey = () => {
   return (
@@ -14,8 +13,8 @@ const getApiKey = () => {
 };
 
 export const fetchLists = async (type: 'workflows' | 'methods') => {
-  console.log('Fetching lists for type:', type);
-  const response = await fetch(`${SWYTCHCODE_BASE_URL}/chat-list`, {
+  const response = await fetch(`/api/chat-list`, {
+
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -24,13 +23,16 @@ export const fetchLists = async (type: 'workflows' | 'methods') => {
     body: JSON.stringify({ param: type })
   });
   const data = await response.json();
-  console.log('Lists response:', data);
   return data;
 };
 
-export const fetchCode = async (type: 'code' | 'workflow', prompt: string, language: string) => {
-  console.log('Fetching code:', { type, prompt, language });
-  const response = await fetch(`${SWYTCHCODE_BASE_URL}/chat-fetch-code`, {
+export const fetchCode = async (
+  type: 'code' | 'workflow',
+  prompt: string,
+  language: string,
+  onMessage?: (chunk: string) => void
+) => {
+  const response = await fetch(`/api/stream/chat-fetch-code`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -38,13 +40,45 @@ export const fetchCode = async (type: 'code' | 'workflow', prompt: string, langu
     },
     body: JSON.stringify({ type, prompt, language })
   });
-  const data = await response.json();
-  console.log('Code response:', data);
-  return data;
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  if (onMessage && response.body) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let fullText = '';
+    
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      
+      if (value) {
+        const chunk = decoder.decode(value, { stream: !done });
+        fullText += chunk;
+        onMessage(chunk);
+      }
+    }
+
+    try {
+      const data = JSON.parse(fullText);
+      return data;
+    } catch (e) {
+      return { data: { code: btoa(fullText) } };
+    }
+  } else {
+    const data = await response.json();
+    return data;
+  }
 };
 
-export const chatWorkflowRequest = async (messages: { content: string }[]) => {
-  const endpoint = `${SWYTCHCODE_BASE_URL}/chat-workflow-request`;
+export const chatWorkflowRequest = async (
+  messages: { content: string }[],
+  onMessage?: (chunk: string) => void
+) => {
+  const endpoint = `/api/stream/chat-workflow-request`;
   const payload = {
     workflow: messages[messages.length - 1].content,
     code_context: "",
@@ -59,6 +93,35 @@ export const chatWorkflowRequest = async (messages: { content: string }[]) => {
     body: JSON.stringify(payload)
   });
 
-  const data = await response.json();
-  return atob(data.data);
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  if (onMessage && response.body) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let fullText = '';
+    
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      
+      if (value) {
+        const chunk = decoder.decode(value, { stream: !done });
+        fullText += chunk;
+        onMessage(chunk);
+      }
+    }
+
+    try {
+      const data = JSON.parse(fullText);
+      return atob(data.data);
+    } catch (e) {
+      return fullText;
+    }
+  } else {
+    const data = await response.json();
+    return atob(data.data);
+  }
 }; 

@@ -9,7 +9,7 @@ import { fetchLists, fetchCode, chatWorkflowRequest } from './services/api';
 import {
   AppBg, AppContainer, WorkflowsPanel, PanelContent, MainContent,
   ChatHeader, BackArrow, MessagesContainer, InputForm, MessageInput,
-  SendBtn, Throbber, GlobalStyles, Tabs, Tab, Label, FormGroup,
+  SendBtn, GlobalStyles, Tabs, Tab, Label, FormGroup,
   SearchInput, WorkflowsList, WorkflowItem
 } from './components/styled';
 
@@ -69,13 +69,10 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('Fetching initial data...');
         const workflowsData = await fetchLists('workflows');
-        console.log('Workflows data:', workflowsData);
         setWorkflowsList(workflowsData.data || []);
 
         const methodsData = await fetchLists('methods');
-        console.log('Methods data:', methodsData);
         setMethodsList(methodsData.data || []);
       } catch (error) {
         console.error('Error fetching lists:', error);
@@ -99,18 +96,40 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     setIsLoading(true);
 
     try {
-      const text = await chatWorkflowRequest([...messages, userMessage]);
-      const languageMatch = text.match(/^```(\w+)/);
-      const codeContent = text.replace(/^```\w+\n/, '').replace(/\n```$/, '');
-      const language = languageMatch ? languageMatch[1] : 'typescript';
-      
-      setMessages(prev =>
-        prev.map(msg =>
-          msg.id === assistantId && msg.role === 'assistant'
-            ? { ...msg, content: `\`\`\`${language}\n${codeContent}\n\`\`\`` }
-            : msg
-        )
-      );
+      await chatWorkflowRequest([...messages, userMessage], (chunk) => {
+        try {
+          // Handle SSE format
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const jsonStr = line.slice(5).trim();
+              if (jsonStr) {
+                const data = JSON.parse(jsonStr);
+                let content = '';
+                if (data.data) {
+                  // Final result (base64)
+                  content = atob(data.data);
+                } else if (data.message) {
+                  // Progress update
+                  content = data.message;
+                }
+                if (content) {
+                  setMessages(prev => {
+                    const newMessages = prev.map(msg =>
+                      msg.id === assistantId && msg.role === 'assistant'
+                        ? { ...msg, content }
+                        : msg
+                    );
+                    return newMessages;
+                  });
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
+        }
+      });
     } catch (error) {
       console.error('Error in chat workflow request:', error);
       setMessages(prev =>
@@ -122,43 +141,72 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       );
     } finally {
       setIsLoading(false);
+      // Remove empty assistant messages after streaming
+      setMessages(prev => prev.filter(msg => msg.role !== 'assistant' || (msg.content && msg.content.trim() !== '')));
     }
   };
 
   const handleWorkflowOrMethodClick = async (text: string) => {
     const userMessage: Message = { id: Date.now(), role: 'user', content: text };
     const assistantId = userMessage.id + 1;
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev, userMessage, { id: assistantId, role: 'assistant', content: '' }]);
     scrollToBottom();
 
     const type = activeTab === 'methods' ? 'code' : 'workflow';
     const language = activeTab === 'methods' 
       ? (selectedMethodLanguage || 'node.js')
       : (selectedLanguage || 'node.js');
-    
     setIsLoading(true);
+    
     try {
-      const data = await fetchCode(type, text, language);
-      console.log("dATA",data);
-      if (data.data?.code) {
-        const decodedCode = atob(data.data.code);
-        const languageMatch = decodedCode.match(/^```(\w+)/);
-        const codeContent = decodedCode.replace(/^```\w+\n/, '').replace(/\n```$/, '');
-        
-        setMessages(prev => [
-          ...prev,
-          { 
-            id: assistantId, 
-            role: 'assistant', 
-            content: `\`\`\`${languageMatch ? languageMatch[1] : 'typescript'}\n${codeContent}\n\`\`\`` 
+      await fetchCode(type, text, language, (chunk) => {
+        try {
+          // Handle SSE format
+          const lines = chunk.split('\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const jsonStr = line.slice(5).trim();
+              if (jsonStr) {
+                const data = JSON.parse(jsonStr);
+                let content = '';
+                if (data.data) {
+                  // Final result (base64)
+                  content = atob(data.data);
+                } else if (data.message) {
+                  // Progress update
+                  content = data.message;
+                }
+                if (content) {
+                  setMessages(prev => {
+                    const newMessages = prev.map(msg =>
+                      msg.id === assistantId && msg.role === 'assistant'
+                        ? { ...msg, content }
+                        : msg
+                    );
+                    return newMessages;
+                  });
+                }
+              }
+            }
           }
-        ]);
+        } catch (e) {
+          console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
+        }
         scrollToBottom();
-      }
+      });
     } catch (error) {
       console.error('Error fetching code:', error);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantId && msg.role === 'assistant'
+            ? { ...msg, content: 'Sorry, there was an error processing your request.' }
+            : msg
+        )
+      );
     } finally {
       setIsLoading(false);
+      // Remove empty assistant messages after streaming
+      setMessages(prev => prev.filter(msg => msg.role !== 'assistant' || (msg.content && msg.content.trim() !== '')));
     }
   };
 
@@ -253,7 +301,8 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
         borderRadius: 8,
         padding: '1rem',
         maxWidth: '80%',
-        margin: '0.5rem 0'
+        margin: '0.5rem 0',
+        whiteSpace: 'pre-wrap'
       }}>
         <div style={{ margin: 0, padding: 0 }}>
           {msg.content}
@@ -339,7 +388,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                         />
                       </FormGroup>
                       <Label style={{ marginTop: '1rem', marginBottom: '0.5rem', fontWeight: 600 }}>
-                        Most used methods
+                        Methods List
                       </Label>
                       <WorkflowsList>
                         {methods
@@ -369,7 +418,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                   <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
                 )}
               </BackArrow>
-              <span style={{ marginLeft: '2.5rem', fontWeight: 600, fontSize: '1.08rem', whiteSpace: 'nowrap' }}>Chat with AI Assistant</span>
+              <span style={{ marginLeft: '2.5rem', fontWeight: 600, fontSize: '1.08rem', whiteSpace: 'nowrap' }}>Chat with API AI Assistant</span>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                 <a
                   href="https://swytchcode.com"
@@ -412,12 +461,14 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                 </div>
               ) : (
                 <>
-                  {messages.map(msg => (
-                    <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-                      {renderMessage(msg)}
-                    </div>
-                  ))}
-                  {isLoading && <Throbber>Thinking...</Throbber>}
+                  {messages
+                    .filter(msg => msg.content && msg.content.trim() !== '')
+                    .map(msg => (
+                      <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+                        {renderMessage(msg)}
+                      </div>
+                    ))}
+                  
                   <div ref={messagesEndRef} />
                 </>
               )}
