@@ -7,6 +7,7 @@ export interface SwytchcodeProps {
   width?: string;
   borderColor?: string;
   apiKey?: string;
+  prismTheme?: 'default' | 'dark' | 'funky' | 'okaidia' | 'twilight' | 'coy' | 'solarizedlight' | 'tomorrow' | 'atom-dark' | 'vs' | 'xonokai' | 'duotone-dark' | 'duotone-light' | 'duotone-sea' | 'duotone-space' | 'duotone-earth' | 'duotone-forest' | 'duotone-rose';
 } 
 
 export interface Message {

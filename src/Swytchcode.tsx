@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Prism from 'prismjs';
-import 'prismjs/themes/prism-twilight.css';
 import 'prismjs/components/prism-typescript.min.js';
 import { PROGRAMMING_LANGUAGES } from "./Constants";
 import { SwytchcodeProps, Message, ListItem } from './types/index';
@@ -13,6 +12,28 @@ import {
   SearchInput, WorkflowsList, WorkflowItem
 } from './components/styled';
 
+// Import all available themes
+const themes = {
+  default: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css',
+  dark: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-dark.min.css',
+  funky: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-funky.min.css',
+  okaidia: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css',
+  twilight: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-twilight.min.css',
+  coy: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-coy.min.css',
+  solarizedlight: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-solarizedlight.min.css',
+  tomorrow: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css',
+  'atom-dark': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-atom-dark.min.css',
+  vs: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-vs.min.css',
+  xonokai: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-xonokai.min.css',
+  'duotone-dark': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-dark.min.css',
+  'duotone-light': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-light.min.css',
+  'duotone-sea': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-sea.min.css',
+  'duotone-space': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-space.min.css',
+  'duotone-earth': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-earth.min.css',
+  'duotone-forest': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-forest.min.css',
+  'duotone-rose': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-rose.min.css'
+};
+
 export const Swytchcode: React.FC<SwytchcodeProps> = ({
   initialMessage = "Hello! I'm your AI assistant. How can I help you today? Ask me to show you some code examples!",
   promptValue = '',
@@ -22,6 +43,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   width = '100%',
   borderColor = '#e5e7eb',
   apiKey,
+  prismTheme = 'twilight',
 }) => {
   const [activeTab, setActiveTab] = React.useState('methods');
   const [selectedLanguage, setSelectedLanguage] = React.useState('');
@@ -79,6 +101,24 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       setApiKey(apiKey);
     }
   }, [apiKey]);
+
+  // Apply the selected theme
+  React.useEffect(() => {
+    // Remove any existing Prism theme links
+    const existingLinks = document.querySelectorAll('link[href*="prism-"]');
+    existingLinks.forEach(link => link.remove());
+
+    // Create and append the new theme link
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = themes[prismTheme as keyof typeof themes];
+    document.head.appendChild(link);
+
+    // Cleanup function
+    return () => {
+      link.remove();
+    };
+  }, [prismTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
