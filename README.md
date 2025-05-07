@@ -147,11 +147,11 @@ function App() {
 | `sendButtonColor` | string | '#2563eb' | Color of the send button |
 | `userBubbleColor` | string | '#3b82f6' | Color of user message bubbles |
 | `promptValue` | string | 'Ask me anything...' | Placeholder text for the input field |
-| `prismTheme` | string | 'twilight' | Theme for code syntax highlighting |
+| `highlightTheme` | string | 'twilight' | Theme for code syntax highlighting |
 
 ## Available Prism Themes
 
-The `prismTheme` prop supports the following themes:
+The `highlightTheme` prop supports the following themes:
 
 | Theme | Description |
 |-------|-------------|
@@ -178,7 +178,7 @@ Example usage:
 ```jsx
 <Swytchcode
   apiKey="YOUR_API_KEY"
-  prismTheme="dark"  // Choose any theme from the list above
+  highlightTheme="dark"  // Choose any theme from the list above
   // ... other props
 />
 ```

@@ -43,7 +43,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   width = '100%',
   borderColor = '#e5e7eb',
   apiKey,
-  prismTheme = 'twilight',
+  highlightTheme = 'twilight',
 }) => {
   const [activeTab, setActiveTab] = React.useState('methods');
   const [selectedLanguage, setSelectedLanguage] = React.useState('');
@@ -111,14 +111,14 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
     // Create and append the new theme link
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = themes[prismTheme as keyof typeof themes];
+    link.href = themes[highlightTheme as keyof typeof themes];
     document.head.appendChild(link);
 
     // Cleanup function
     return () => {
       link.remove();
     };
-  }, [prismTheme]);
+  }, [highlightTheme]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
