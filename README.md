@@ -37,16 +37,29 @@ yarn add swytchcode
 <script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
 ```
 
+## Getting an API Key
+
+Before using the library, you'll need an API key:
+
+1. Visit [https://app.swytchcode.com](https://app.swytchcode.com)
+2. Sign up or log in to your account
+3. Go to Settings > Chat Key
+4. Generate a new API key
+
 ## Usage
 
-### React
+The `apiKey` prop is required for the library to function. You can pass it directly or use environment variables depending on your setup.
+
+### Next.js Project
 
 ```jsx
+// pages/index.tsx or app/page.tsx
 import { Swytchcode } from 'swytchcode';
 
-function App() {
+export default function Home() {
   return (
     <Swytchcode
+      apiKey={process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY}
       borderColor="#3b82f6"
       height="600px"
       width="100%"
@@ -56,7 +69,60 @@ function App() {
 }
 ```
 
-### Vanilla JavaScript
+Add to your `.env.local`:
+```env
+NEXT_PUBLIC_SWYTCHCODE_API_KEY=your_api_key_here
+```
+
+### Vite Project
+
+```jsx
+// App.tsx or main.tsx
+import { Swytchcode } from 'swytchcode';
+
+function App() {
+  return (
+    <Swytchcode
+      apiKey={import.meta.env.VITE_SWYTCHCODE_API_KEY}
+      borderColor="#3b82f6"
+      height="600px"
+      width="100%"
+      initialMessage="Welcome to the Swytchcode Chat Library!"
+    />
+  );
+}
+```
+
+Add to your `.env`:
+```env
+VITE_SWYTCHCODE_API_KEY=your_api_key_here
+```
+
+### Create React App
+
+```jsx
+// App.jsx
+import { Swytchcode } from 'swytchcode';
+
+function App() {
+  return (
+    <Swytchcode
+      apiKey={process.env.REACT_APP_SWYTCHCODE_API_KEY}
+      borderColor="#3b82f6"
+      height="600px"
+      width="100%"
+      initialMessage="Welcome to the Swytchcode Chat Library!"
+    />
+  );
+}
+```
+
+Add to your `.env`:
+```env
+REACT_APP_SWYTCHCODE_API_KEY=your_api_key_here
+```
+
+### Vanilla JavaScript/HTML
 
 ```html
 <!DOCTYPE html>
@@ -72,6 +138,7 @@ function App() {
     const root = ReactDOM.createRoot(document.getElementById('chat-library'));
     root.render(
       React.createElement(Swytchcode, {
+        apiKey: 'your_api_key_here', // Replace with your API key
         borderColor: '#3b82f6',
         height: '600px',
         width: '100%',
@@ -87,6 +154,7 @@ function App() {
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
+| `apiKey` | string | undefined | Your Swytchcode API key (required) |
 | `borderColor` | string | '#e5e7eb' | Color of the library border |
 | `height` | string \| number | '80vh' | Height of the library |
 | `width` | string \| number | '100%' | Width of the library |
@@ -122,31 +190,6 @@ Supported languages:
 - Rust
 - Ruby
 - C
-
-## Environment Variables
-
-The following environment variables are supported for the API key:
-
-| Variable | Framework | Description |
-|----------|-----------|-------------|
-| `SWYTCHCODE_API_KEY` | Universal | Your Swytchcode API key for authentication |
-| `VITE_SWYTCHCODE_API_KEY` | Vite | Your Swytchcode API key for authentication |
-| `NEXT_PUBLIC_SWYTCHCODE_API_KEY` | Next.js | Your Swytchcode API key for authentication |
-| `REACT_APP_SWYTCHCODE_API_KEY` | Create React App | Your Swytchcode API key for authentication |
-
-Example `.env` file:
-```env
-# Use any of these variable names
-SWYTCHCODE_API_KEY=your_api_key_here
-# or
-VITE_SWYTCHCODE_API_KEY=your_api_key_here
-# or
-NEXT_PUBLIC_SWYTCHCODE_API_KEY=your_api_key_here
-# or
-REACT_APP_SWYTCHCODE_API_KEY=your_api_key_here
-```
-
-**API Key** can be obtained from **[App](https://app.swytchcode.com) > Settings > Chat Key** once you provide an OpenAI key.
 
 ## Development
 

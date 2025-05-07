@@ -18,6 +18,7 @@ function App() {
         height="600px"
         width="1400px"
         borderColor="#e5e7eb"
+        apiKey='YOUR_API_KEY'
       />
     </div>
   );

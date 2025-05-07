@@ -3,10 +3,11 @@ export interface SwytchcodeProps {
   promptValue?: string;
   sendButtonColor?: string;
   userBubbleColor?: string;
-  height?: string | number;
-  width?: string | number;
+  height?: string;
+  width?: string;
   borderColor?: string;
-}
+  apiKey?: string;
+} 
 
 export interface Message {
   id: number;

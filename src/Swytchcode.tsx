@@ -3,9 +3,9 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism-twilight.css';
 import 'prismjs/components/prism-typescript.min.js';
 import { PROGRAMMING_LANGUAGES } from "./Constants";
-import { SwytchcodeProps, Message, ListItem } from './types';
+import { SwytchcodeProps, Message, ListItem } from './types/index';
 import { SearchableDropdown } from './components/SearchableDropdown';
-import { fetchLists, fetchCode, chatWorkflowRequest } from './services/api';
+import { fetchLists, fetchCode, chatWorkflowRequest, setApiKey } from './services/api';
 import {
   AppBg, AppContainer, WorkflowsPanel, PanelContent, MainContent,
   ChatHeader, BackArrow, MessagesContainer, InputForm, MessageInput,
@@ -21,6 +21,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   height = '80vh',
   width = '100%',
   borderColor = '#e5e7eb',
+  apiKey,
 }) => {
   const [activeTab, setActiveTab] = React.useState('methods');
   const [selectedLanguage, setSelectedLanguage] = React.useState('');
@@ -44,15 +45,6 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
   const methods = methodsList.map(m => m.name);
 
   // Check for missing API key
-  const apiKey = 
-    import.meta.env.SWYTCHCODE_API_KEY || 
-    import.meta.env.VITE_SWYTCHCODE_API_KEY || 
-    import.meta.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
-    import.meta.env.REACT_APP_SWYTCHCODE_API_KEY || 
-    process.env.SWYTCHCODE_API_KEY || 
-    process.env.VITE_SWYTCHCODE_API_KEY || 
-    process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
-    process.env.REACT_APP_SWYTCHCODE_API_KEY;
   const isApiKeyMissing = !apiKey || apiKey.trim() === '';
 
   const scrollToBottom = () => {
@@ -81,6 +73,12 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
 
     fetchData();
   }, []);
+
+  React.useEffect(() => {
+    if (apiKey) {
+      setApiKey(apiKey);
+    }
+  }, [apiKey]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,9 +114,9 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                 if (content) {
                   setMessages(prev => {
                     const newMessages = prev.map(msg =>
-                      msg.id === assistantId && msg.role === 'assistant'
+            msg.id === assistantId && msg.role === 'assistant'
                         ? { ...msg, content }
-                        : msg
+              : msg
                     );
                     return newMessages;
                   });
@@ -128,7 +126,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
           }
         } catch (e) {
           console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
-        }
+      }
       });
     } catch (error) {
       console.error('Error in chat workflow request:', error);
@@ -179,9 +177,9 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                 if (content) {
                   setMessages(prev => {
                     const newMessages = prev.map(msg =>
-                      msg.id === assistantId && msg.role === 'assistant'
+            msg.id === assistantId && msg.role === 'assistant'
                         ? { ...msg, content }
-                        : msg
+              : msg
                     );
                     return newMessages;
                   });
@@ -191,7 +189,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
           }
         } catch (e) {
           console.error('Error parsing chunk:', e, 'Raw chunk:', chunk);
-        }
+      }
         scrollToBottom();
       });
     } catch (error) {
@@ -222,7 +220,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
         Prism.languages[language] || Prism.languages.javascript,
         language
       );
-      return (
+        return (
         <div style={{
           position: 'relative',
           background: '#23272f',
@@ -232,66 +230,66 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
           margin: '1rem 0',
           overflowX: 'auto'
         }}>
-          <span style={{
-            position: 'absolute',
-            top: 8,
-            left: 16,
-            color: '#fff',
-            background: '#3b3b3b',
-            fontSize: '0.75em',
-            padding: '0.1em 0.7em',
-            borderRadius: 4,
-            zIndex: 2,
-            fontWeight: 600,
-            letterSpacing: '0.04em',
-            pointerEvents: 'none'
-          }}>
-            {language}
-          </span>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(code);
-              setCopiedId(msg.id);
-              setTimeout(() => setCopiedId(null), 1200);
-            }}
-            style={{
+            <span style={{
               position: 'absolute',
               top: 8,
-              right: 8,
-              background: '#23272f',
-              border: '1px solid #444',
+              left: 16,
+              color: '#fff',
+              background: '#3b3b3b',
+              fontSize: '0.75em',
+              padding: '0.1em 0.7em',
               borderRadius: 4,
-              padding: '0.1rem 0.5rem',
-              fontSize: '0.8em',
-              cursor: 'pointer',
               zIndex: 2,
-              outline: 'none',
-              boxShadow: 'none',
-              color: '#f8f8f2',
-              transition: 'background 0.2s, border-color 0.2s'
-            }}
+              fontWeight: 600,
+              letterSpacing: '0.04em',
+              pointerEvents: 'none'
+            }}>
+            {language}
+            </span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(code);
+                setCopiedId(msg.id);
+                setTimeout(() => setCopiedId(null), 1200);
+              }}
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                background: '#23272f',
+                border: '1px solid #444',
+                borderRadius: 4,
+                padding: '0.1rem 0.5rem',
+                fontSize: '0.8em',
+                cursor: 'pointer',
+                zIndex: 2,
+                outline: 'none',
+                boxShadow: 'none',
+                color: '#f8f8f2',
+                transition: 'background 0.2s, border-color 0.2s'
+              }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = '#2d333b';
-              e.currentTarget.style.borderColor = '#555';
-            }}
+                e.currentTarget.style.background = '#2d333b';
+                e.currentTarget.style.borderColor = '#555';
+              }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = '#23272f';
-              e.currentTarget.style.borderColor = '#444';
-            }}
-          >
-            {copiedId === msg.id ? 'Copied!' : 'Copy'}
-          </button>
-          <div style={{ height: 32 }} />
-          <hr style={{ border: 0, borderTop: '1px solid #444', margin: '0 0 1rem 0' }} />
+                e.currentTarget.style.background = '#23272f';
+                e.currentTarget.style.borderColor = '#444';
+              }}
+            >
+              {copiedId === msg.id ? 'Copied!' : 'Copy'}
+            </button>
+            <div style={{ height: 32 }} />
+            <hr style={{ border: 0, borderTop: '1px solid #444', margin: '0 0 1rem 0' }} />
           <pre className={`language-${language}`} style={{ margin: 0 }}>
             <code
               className={`language-${language}`}
               dangerouslySetInnerHTML={{ __html: highlighted }}
             />
-          </pre>
-        </div>
-      );
-    }
+            </pre>
+          </div>
+        );
+      }
     // Fallback for non-code messages
     return (
       <div style={{
@@ -464,12 +462,12 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                   {messages
                     .filter(msg => msg.content && msg.content.trim() !== '')
                     .map(msg => (
-                      <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
-                        {renderMessage(msg)}
-                      </div>
-                    ))}
+                <div key={msg.id} style={{ marginBottom: '1rem', textAlign: msg.role === 'user' ? 'right' : 'left' }}>
+                  {renderMessage(msg)}
+                </div>
+              ))}
                   
-                  <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} />
                 </>
               )}
             </MessagesContainer>

@@ -6,7 +6,9 @@ import { SWYTCHCODE_BASE_URL, SWYTCHCODE_STREAM_BASE_URL } from './src/Constants
 export default defineConfig({
   plugins: [react()],
   define: {
-    'process.env.NODE_ENV': JSON.stringify('production')
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    'process.env.SWYTCHCODE_BASE_URL': JSON.stringify(SWYTCHCODE_BASE_URL),
+    'process.env.SWYTCHCODE_STREAM_BASE_URL': JSON.stringify(SWYTCHCODE_STREAM_BASE_URL)
   },
   server: {
     proxy: {
@@ -29,7 +31,7 @@ export default defineConfig({
       entry: './src/index.ts',
       name: 'Swytchcode',
       fileName: (format) => `swytchcode.${format}.js`,
-      formats: ['umd', 'es']
+      formats: ['es', 'umd']
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
@@ -41,6 +43,7 @@ export default defineConfig({
       }
     },
     outDir: 'dist',
-    emptyOutDir: true
+    emptyOutDir: true,
+    sourcemap: true
   }
 }) 
