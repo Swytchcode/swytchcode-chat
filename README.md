@@ -59,7 +59,7 @@ import { Swytchcode } from 'swytchcode';
 export default function Home() {
   return (
     <Swytchcode
-      apiKey={process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY}
+      apiKey="YOUR_API_KEY"
       borderColor="#3b82f6"
       height="600px"
       width="100%"
@@ -67,12 +67,7 @@ export default function Home() {
     />
   );
 }
-```
 
-Add to your `.env.local`:
-```env
-NEXT_PUBLIC_SWYTCHCODE_API_KEY=your_api_key_here
-```
 
 ### Vite Project
 
@@ -83,7 +78,7 @@ import { Swytchcode } from 'swytchcode';
 function App() {
   return (
     <Swytchcode
-      apiKey={import.meta.env.VITE_SWYTCHCODE_API_KEY}
+      apiKey="YOUR_API_KEY"
       borderColor="#3b82f6"
       height="600px"
       width="100%"
@@ -91,12 +86,7 @@ function App() {
     />
   );
 }
-```
 
-Add to your `.env`:
-```env
-VITE_SWYTCHCODE_API_KEY=your_api_key_here
-```
 
 ### Create React App
 
@@ -107,7 +97,7 @@ import { Swytchcode } from 'swytchcode';
 function App() {
   return (
     <Swytchcode
-      apiKey={process.env.REACT_APP_SWYTCHCODE_API_KEY}
+      apiKey="YOUR_API_KEY"
       borderColor="#3b82f6"
       height="600px"
       width="100%"
@@ -115,12 +105,7 @@ function App() {
     />
   );
 }
-```
 
-Add to your `.env`:
-```env
-REACT_APP_SWYTCHCODE_API_KEY=your_api_key_here
-```
 
 ### Vanilla JavaScript/HTML
 
@@ -138,7 +123,7 @@ REACT_APP_SWYTCHCODE_API_KEY=your_api_key_here
     const root = ReactDOM.createRoot(document.getElementById('chat-library'));
     root.render(
       React.createElement(Swytchcode, {
-        apiKey: 'your_api_key_here', // Replace with your API key
+        apiKey="YOUR_API_KEY"
         borderColor: '#3b82f6',
         height: '600px',
         width: '100%',
