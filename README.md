@@ -147,6 +147,41 @@ function App() {
 | `sendButtonColor` | string | '#2563eb' | Color of the send button |
 | `userBubbleColor` | string | '#3b82f6' | Color of user message bubbles |
 | `promptValue` | string | 'Ask me anything...' | Placeholder text for the input field |
+| `prismTheme` | string | 'twilight' | Theme for code syntax highlighting |
+
+## Available Prism Themes
+
+The `prismTheme` prop supports the following themes:
+
+| Theme | Description |
+|-------|-------------|
+| `default` | Clean and minimal theme with a light background |
+| `dark` | Dark theme with high contrast |
+| `funky` | Vibrant theme with a dark background and colorful syntax |
+| `okaidia` | Dark theme with a warm color palette |
+| `twilight` | Dark theme with a cool color palette (default) |
+| `coy` | Light theme with subtle colors |
+| `solarizedlight` | Light theme based on the Solarized color scheme |
+| `tomorrow` | Dark theme with a modern color palette |
+| `atom-dark` | Dark theme inspired by Atom editor |
+| `vs` | Light theme inspired by Visual Studio |
+| `xonokai` | Dark theme with a warm, earthy color palette |
+| `duotone-dark` | Dark theme with a duotone color scheme |
+| `duotone-light` | Light theme with a duotone color scheme |
+| `duotone-sea` | Dark theme with a sea-inspired duotone scheme |
+| `duotone-space` | Dark theme with a space-inspired duotone scheme |
+| `duotone-earth` | Dark theme with an earth-inspired duotone scheme |
+| `duotone-forest` | Dark theme with a forest-inspired duotone scheme |
+| `duotone-rose` | Dark theme with a rose-inspired duotone scheme |
+
+Example usage:
+```jsx
+<Swytchcode
+  apiKey="YOUR_API_KEY"
+  prismTheme="dark"  // Choose any theme from the list above
+  // ... other props
+/>
+```
 
 ## Code Block Support
 
