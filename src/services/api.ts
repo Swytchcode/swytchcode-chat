@@ -1,20 +1,18 @@
+import { SWYTCHCODE_BASE_URL, SWYTCHCODE_STREAM_BASE_URL } from '../Constants';
+
+let apiKey: string | undefined;
+
+export const setApiKey = (key: string) => {
+  apiKey = key;
+};
 
 const getApiKey = () => {
-  return (
-    import.meta.env.SWYTCHCODE_API_KEY || 
-    import.meta.env.VITE_SWYTCHCODE_API_KEY || 
-    import.meta.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
-    import.meta.env.REACT_APP_SWYTCHCODE_API_KEY || 
-    process.env.SWYTCHCODE_API_KEY || 
-    process.env.VITE_SWYTCHCODE_API_KEY || 
-    process.env.NEXT_PUBLIC_SWYTCHCODE_API_KEY || 
-    process.env.REACT_APP_SWYTCHCODE_API_KEY
-  );
+  return apiKey;
 };
 
 export const fetchLists = async (type: 'workflows' | 'methods') => {
-  const response = await fetch(`/api/chat-list`, {
-
+  console.log("JEY", getApiKey())
+  const response = await fetch(`${SWYTCHCODE_BASE_URL}/chat-list`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +30,7 @@ export const fetchCode = async (
   language: string,
   onMessage?: (chunk: string) => void
 ) => {
-  const response = await fetch(`/api/stream/chat-fetch-code`, {
+  const response = await fetch(`${SWYTCHCODE_STREAM_BASE_URL}/chat-fetch-code`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -78,7 +76,7 @@ export const chatWorkflowRequest = async (
   messages: { content: string }[],
   onMessage?: (chunk: string) => void
 ) => {
-  const endpoint = `/api/stream/chat-workflow-request`;
+  const endpoint = `${SWYTCHCODE_STREAM_BASE_URL}/chat-workflow-request`;
   const payload = {
     workflow: messages[messages.length - 1].content,
     code_context: "",
