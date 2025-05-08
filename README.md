@@ -6,6 +6,10 @@ A powerful and customizable chat library that integrates AI-powered code generat
 ![npm version](https://badge.fury.io/js/swytchcode.svg)
 [![Check compilation](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml/badge.svg)](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml)
 
+## Watch Swytchcode in action
+
+![Swytchcode Chat Demo](Swytchcode-chat-intro.gif)
+
 ## Features
 
 - 🤖 AI-powered code generation and assistance
