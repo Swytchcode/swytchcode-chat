@@ -1,6 +1,6 @@
 # Swytchcode Chat Library
 
-A powerful and customizable chat library that integrates AI-powered code generation and assistance into your applications.
+A powerful, customizable chat library that brings AI-driven code generation and assistance to your apps and docs—enabling your users to interact with your APIs directly and bypass traditional documentation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![npm version](https://badge.fury.io/js/swytchcode.svg)
