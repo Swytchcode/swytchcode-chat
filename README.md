@@ -1,10 +1,14 @@
 # Swytchcode Chat Library
 
-A powerful and customizable chat library that integrates AI-powered code generation and assistance into your applications.
+A powerful, customizable chat library that brings AI-driven code generation and assistance to your apps and docs—enabling your users to interact with your APIs directly and bypass traditional documentation.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![npm version](https://badge.fury.io/js/swytchcode.svg)
 [![Check compilation](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml/badge.svg)](https://github.com/Swytchcode/swytchcode-chat/actions/workflows/compile.yml)
+
+## Watch Swytchcode in action
+
+![Swytchcode Chat Demo](Swytchcode-chat-intro.gif)
 
 ## Features
 
@@ -50,7 +54,7 @@ Before using the library, you'll need an API key:
 
 The `apiKey` prop is required for the library to function. You can pass it directly or use environment variables depending on your setup.
 
-### Next.js Project
+### ES Projects
 
 ```jsx
 // pages/index.tsx or app/page.tsx
@@ -67,44 +71,7 @@ export default function Home() {
     />
   );
 }
-
-
-### Vite Project
-
-```jsx
-// App.tsx or main.tsx
-import { Swytchcode } from 'swytchcode';
-
-function App() {
-  return (
-    <Swytchcode
-      apiKey="YOUR_API_KEY"
-      borderColor="#3b82f6"
-      height="600px"
-      width="100%"
-      initialMessage="Welcome to the Swytchcode Chat Library!"
-    />
-  );
-}
-
-
-### Create React App
-
-```jsx
-// App.jsx
-import { Swytchcode } from 'swytchcode';
-
-function App() {
-  return (
-    <Swytchcode
-      apiKey="YOUR_API_KEY"
-      borderColor="#3b82f6"
-      height="600px"
-      width="100%"
-      initialMessage="Welcome to the Swytchcode Chat Library!"
-    />
-  );
-}
+```
 
 
 ### Vanilla JavaScript/HTML
