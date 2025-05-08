@@ -54,7 +54,7 @@ Before using the library, you'll need an API key:
 
 The `apiKey` prop is required for the library to function. You can pass it directly or use environment variables depending on your setup.
 
-### Next.js Project
+### ES Projects
 
 ```jsx
 // pages/index.tsx or app/page.tsx
@@ -71,44 +71,7 @@ export default function Home() {
     />
   );
 }
-
-
-### Vite Project
-
-```jsx
-// App.tsx or main.tsx
-import { Swytchcode } from 'swytchcode';
-
-function App() {
-  return (
-    <Swytchcode
-      apiKey="YOUR_API_KEY"
-      borderColor="#3b82f6"
-      height="600px"
-      width="100%"
-      initialMessage="Welcome to the Swytchcode Chat Library!"
-    />
-  );
-}
-
-
-### Create React App
-
-```jsx
-// App.jsx
-import { Swytchcode } from 'swytchcode';
-
-function App() {
-  return (
-    <Swytchcode
-      apiKey="YOUR_API_KEY"
-      borderColor="#3b82f6"
-      height="600px"
-      width="100%"
-      initialMessage="Welcome to the Swytchcode Chat Library!"
-    />
-  );
-}
+```
 
 
 ### Vanilla JavaScript/HTML
