@@ -80,24 +80,39 @@ export default function Home() {
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-twilight.min.css" rel="stylesheet" />
 </head>
 <body>
   <div id="chat-library"></div>
-  <script>
-    const root = ReactDOM.createRoot(document.getElementById('chat-library'));
-    root.render(
-      React.createElement(Swytchcode, {
-        apiKey="YOUR_API_KEY"
-        borderColor: '#3b82f6',
-        height: '600px',
-        width: '100%',
-        initialMessage: 'Welcome to the Swytchcode Chat Library!'
-      })
-    );
-  </script>
+  <script type="module">
+        // Import React and ReactDOM as ES modules
+        import React from 'https://esm.sh/react@18.2.0';
+        import ReactDOM from 'https://esm.sh/react-dom@18.2.0';
+        
+        // Import the Swytchcode component
+        import Swytchcode from './swytchcode.es.js';
+
+        try {
+            // Initialize the component
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            console.log('Root element:', document.getElementById('root'));
+            
+            root.render(
+                React.createElement(Swytchcode, {
+                    apiKey: 'YOUR_API_KEY', // Replace with your actual API key
+                    theme: 'twilight',
+                    height: '80vh',
+                    width: '100%',
+                    initialMessage: "Hello! I'm your AI assistant. How can I help you today?"
+                })
+            );
+        } catch (error) {
+            console.error('Error in script:', error);
+            document.getElementById('root').innerHTML = `<div style="color: red; padding: 1rem;">Error: ${error.message}</div>`;
+        }
+    </script>
 </body>
 </html>
 ```

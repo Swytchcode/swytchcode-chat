@@ -34,7 +34,7 @@ const themes = {
   'duotone-rose': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-rose.min.css'
 };
 
-export const Swytchcode: React.FC<SwytchcodeProps> = ({
+const Swytchcode: React.FC<SwytchcodeProps> = ({
   initialMessage = "Hello! I'm your AI assistant. How can I help you today? Ask me to show you some code examples!",
   promptValue = '',
   sendButtonColor = '#2563eb',
@@ -398,7 +398,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                           .filter(wf => wf.toLowerCase().includes(searchQuery.toLowerCase()))
                           .map(wf => (
                             <WorkflowItem 
-                              key={wf} 
+                              key={`workflow-${wf}`} 
                               onClick={() => handleWorkflowOrMethodClick(wf)}
                               style={{ cursor: 'pointer' }}
                             >
@@ -433,7 +433,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                           .filter(m => m.toLowerCase().includes(methodSearch.toLowerCase()))
                           .map(m => (
                             <WorkflowItem 
-                              key={m} 
+                              key={`method-${m}`} 
                               onClick={() => handleWorkflowOrMethodClick(m)}
                               style={{ cursor: 'pointer' }}
                             >
@@ -495,7 +495,7 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
                   fontSize: '1.1rem',
                   maxWidth: 500,
                 }}>
-                  VITE_SWYTCHCODE_API_KEY is missing. If you are the owner of this project, please generate a new key from <a href="https://app.swytchcode.com" target="_blank" rel="noopener noreferrer">https://app.swytchcode.com</a>. Read more about it in the <a href="https://docs.swytchcode.com/docs/getting-started/installation" target="_blank" rel="noopener noreferrer">documentation</a>.
+                  SWYTCHCODE_API_KEY is missing. If you are the owner of this project, please generate a new key from <a href="https://app.swytchcode.com" target="_blank" rel="noopener noreferrer">https://app.swytchcode.com</a>. Read more about it in the <a href="https://docs.swytchcode.com/docs/getting-started/installation" target="_blank" rel="noopener noreferrer">documentation</a>.
                 </div>
               ) : (
                 <>
@@ -526,4 +526,6 @@ export const Swytchcode: React.FC<SwytchcodeProps> = ({
       </AppBg>
     </div>
   );
-}; 
+};
+
+export default Swytchcode; 
