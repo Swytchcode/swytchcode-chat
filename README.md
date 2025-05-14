@@ -92,7 +92,7 @@ export default function Home() {
         import ReactDOM from 'https://esm.sh/react-dom@18.2.0';
         
         // Import the Swytchcode component
-        import Swytchcode from './swytchcode.es.js';
+        import {Swytchcode} from './swytchcode.es.js';
 
         try {
             // Initialize the component

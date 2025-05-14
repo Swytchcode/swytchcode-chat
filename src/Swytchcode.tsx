@@ -34,7 +34,7 @@ const themes = {
   'duotone-rose': 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-duotone-rose.min.css'
 };
 
-const Swytchcode: React.FC<SwytchcodeProps> = ({
+export const Swytchcode: React.FC<SwytchcodeProps> = ({
   initialMessage = "Hello! I'm your AI assistant. How can I help you today? Ask me to show you some code examples!",
   promptValue = '',
   sendButtonColor = '#2563eb',
@@ -528,4 +528,3 @@ const Swytchcode: React.FC<SwytchcodeProps> = ({
   );
 };
 
-export default Swytchcode; 
