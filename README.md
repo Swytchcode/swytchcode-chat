@@ -38,7 +38,7 @@ yarn add swytchcode
 ### CDN
 
 ```html
-<script src="https://unpkg.com/swytchcode/dist/swytchcode.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/swytchcode/swytchcode-chat@v1.2.0/public/swytchcode.es.js"></script>
 ```
 
 ## Getting an API Key
