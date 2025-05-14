@@ -143,17 +143,12 @@
         import ReactDOM from 'https://esm.sh/react-dom@18.2.0';
         
         // Import the Swytchcode component
-        import Swytchcode from './swytchcode.es.js';
+        import {Swytchcode} from './swytchcode.es.js';
 
-        // Debug logging
-        console.log('React:', React);
-        console.log('ReactDOM:', ReactDOM);
-        console.log('Swytchcode:', Swytchcode);
 
         try {
             // Initialize the component
             const root = ReactDOM.createRoot(document.getElementById('root'));
-            console.log('Root element:', document.getElementById('root'));
             
             root.render(
                 React.createElement(Swytchcode, {

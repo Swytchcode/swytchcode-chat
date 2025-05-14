@@ -1,4 +1,4 @@
-import { Swytchcode } from './Swytchcode';
+import  {Swytchcode}  from './Swytchcode';
 
 function App() {
   return (
