@@ -18,7 +18,7 @@ function App() {
         height="600px"
         width="1400px"
         borderColor="#e5e7eb"
-        apiKey='sk_172629df8acb4c5378d06970645149eada885e0975042160b6134a8f2c43f4b8'
+        apiKey='YOUR_API_KEY'
       />
     </div>
   );

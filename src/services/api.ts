@@ -11,7 +11,6 @@ const getApiKey = () => {
 };
 
 export const fetchLists = async (type: 'workflows' | 'methods') => {
-  console.log("JEY", getApiKey())
   const response = await fetch(`${SWYTCHCODE_BASE_URL}/chat-list`, {
     method: 'POST',
     headers: {
